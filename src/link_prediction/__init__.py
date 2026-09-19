@@ -1,0 +1,1 @@
+"""FlyMind Link Prediction package."""

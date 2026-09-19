@@ -1,0 +1,106 @@
+{
+  "feature_names": [
+    "nt_type_score",
+    "da_avg",
+    "ser_avg",
+    "gaba_avg",
+    "glut_avg",
+    "ach_avg",
+    "oct_avg",
+    "length_nm",
+    "area_nm",
+    "size_nm",
+    "coord_x",
+    "coord_y",
+    "coord_z",
+    "cat_flow",
+    "cat_side_x"
+  ],
+  "target_classes": [
+    "ascending",
+    "central",
+    "descending",
+    "endocrine",
+    "motor",
+    "optic",
+    "sensory",
+    "sensory_ascending",
+    "visual_centrifugal",
+    "visual_projection"
+  ],
+  "num_features": [
+    "nt_type_score",
+    "da_avg",
+    "ser_avg",
+    "gaba_avg",
+    "glut_avg",
+    "ach_avg",
+    "oct_avg",
+    "length_nm",
+    "area_nm",
+    "size_nm",
+    "coord_x",
+    "coord_y",
+    "coord_z"
+  ],
+  "cat_features": [
+    "flow",
+    "side_x"
+  ],
+  "num_imputer_statistics": [
+    0.699999988079071,
+    0.029999999329447746,
+    0.0,
+    0.05999999865889549,
+    0.10000000149011612,
+    0.5600000023841858,
+    0.009999999776482582,
+    614402.0,
+    1145342720.0,
+    77753835520.0,
+    521104.0,
+    264132.0,
+    168560.0
+  ],
+  "scaler_mean": [
+    0.6230217378339228,
+    0.044084758207563336,
+    0.024485160475740196,
+    0.16289524682855153,
+    0.1899352665485055,
+    0.4802938124965645,
+    0.02668814159173359,
+    1072243.5622813408,
+    1994439728.5556638,
+    140425748556.1468,
+    520566.9884485571,
+    258427.22404259467,
+    164169.52593945237
+  ],
+  "scaler_scale": [
+    0.2895859438139104,
+    0.06372713301393623,
+    0.07271046079074141,
+    0.2301301387623184,
+    0.22529801906191477,
+    0.3448607381667328,
+    0.03671958103851946,
+    1740592.8597529079,
+    3345791635.63941,
+    251172357682.80548,
+    222146.4859782355,
+    71207.74181087663,
+    53713.8933051084
+  ],
+  "cat_encoder_flow": [
+    "afferent",
+    "efferent",
+    "intrinsic"
+  ],
+  "cat_encoder_side_x": [
+    "__MISSING__",
+    "center",
+    "left",
+    "right"
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "total_edges_princeton": 5342446,
+  "total_edges_buhmann": 16847997,
+  "unique_directed_edges_princeton": 3732460,
+  "unique_neurons_princeton": 138584,
+  "self_loops_princeton": 0,
+  "syn_count_min": 1,
+  "syn_count_max": 2633,
+  "syn_count_mean": 9.48379225545752,
+  "syn_count_median": 6.0,
+  "out_degree_mean": 38.55023667955897,
+  "out_degree_median": 21.0,
+  "in_degree_mean": 38.55023667955897,
+  "in_degree_median": 16.0
+}

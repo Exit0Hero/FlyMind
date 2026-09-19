@@ -1,0 +1,81 @@
+{
+  "validation": {
+    "roc_auc": 0.9795797801581096,
+    "pr_auc": 0.9740269972472905,
+    "precision_at_10": 1.0,
+    "recall_at_10": 9.57878273766255e-06,
+    "hits_at_10": 10,
+    "precision_at_50": 1.0,
+    "recall_at_50": 4.789391459780745e-05,
+    "hits_at_50": 50,
+    "precision_at_100": 1.0,
+    "recall_at_100": 9.57878291956149e-05,
+    "hits_at_100": 100
+  },
+  "candidate_generation": {
+    "n_sources": 10000,
+    "targets_per_source": 100,
+    "total_candidates_scored": 1000000,
+    "sources_with_candidates": 10000,
+    "final_top_candidates": 100000
+  },
+  "score_distribution": {
+    "count": 1000000,
+    "min": 0.0,
+    "max": 1.0,
+    "mean": 0.1346489128333333,
+    "median": 0.03,
+    "std": 0.2207112943069804,
+    "p90": 0.48,
+    "p95": 0.68,
+    "p99": 0.91
+  },
+  "feature_importance_top10": [
+    [
+      "area_nm",
+      0.020284687034379086
+    ],
+    [
+      "length_nm",
+      0.016504113704803963
+    ],
+    [
+      "size_nm",
+      0.015242508091564336
+    ],
+    [
+      "coord_x",
+      0.014236707285972566
+    ],
+    [
+      "coord_y",
+      0.009988561532909718
+    ],
+    [
+      "gaba_avg",
+      0.008849340029929171
+    ],
+    [
+      "coord_z",
+      0.008516765546370998
+    ],
+    [
+      "ach_avg",
+      0.007276865226615912
+    ],
+    [
+      "da_avg",
+      0.007020543530458716
+    ],
+    [
+      "nt_type_score",
+      0.005932732829142756
+    ]
+  ],
+  "feature_importance_groups": {
+    "source biology": 0.05203130883074738,
+    "target biology": 0.03307460884881146,
+    "source-target difference": 0.022814174303445626,
+    "source-target interaction": 0.0252943198656785
+  }
+}

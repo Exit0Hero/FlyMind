@@ -1,0 +1,162 @@
+Target neuron index: 124752
+Root ID: 720575940638162921
+True class: optic
+Predicted class: optic
+Confidence: 0.6938
+Correct: Yes
+
+--- Top 10 incoming neighbors ---
+  Neuron 720575940625679764 (optic) → Target | synapses: 20
+  Neuron 720575940625952755 (optic) → Target | synapses: 18
+  Neuron 720575940626793347 (optic) → Target | synapses: 16
+  Neuron 720575940633176204 (optic) → Target | synapses: 14
+  Neuron 720575940617196219 (optic) → Target | synapses: 11
+  Neuron 720575940631706105 (visual_projection) → Target | synapses: 11
+  Neuron 720575940627957842 (visual_projection) → Target | synapses: 10
+  Neuron 720575940630908409 (optic) → Target | synapses: 9
+  Neuron 720575940612628758 (optic) → Target | synapses: 8
+  Neuron 720575940624037887 (optic) → Target | synapses: 8
+
+--- Top 10 outgoing neighbors ---
+  Target → Neuron 720575940625679764 (optic) | synapses: 20
+  Target → Neuron 720575940625952755 (optic) | synapses: 18
+  Target → Neuron 720575940626793347 (optic) | synapses: 16
+  Target → Neuron 720575940633176204 (optic) | synapses: 14
+  Target → Neuron 720575940631706105 (visual_projection) | synapses: 11
+  Target → Neuron 720575940617196219 (optic) | synapses: 11
+  Target → Neuron 720575940627957842 (visual_projection) | synapses: 10
+  Target → Neuron 720575940630908409 (optic) | synapses: 9
+  Target → Neuron 720575940624037887 (optic) | synapses: 8
+  Target → Neuron 720575940612628758 (optic) | synapses: 8
+
+---
+
+Target neuron index: 79114
+Root ID: 720575940626854842
+True class: sensory
+Predicted class: sensory
+Confidence: 0.9999
+Correct: Yes
+
+--- Top 10 incoming neighbors ---
+  Neuron 720575940616433989 (optic) → Target | synapses: 35
+  Neuron 720575940620034462 (optic) → Target | synapses: 33
+  Neuron 720575940625370044 (optic) → Target | synapses: 26
+  Neuron 720575940620034462 (optic) → Target | synapses: 25
+  Neuron 720575940640285272 (sensory) → Target | synapses: 24
+  Neuron 720575940659625601 (optic) → Target | synapses: 20
+  Neuron 720575940622720169 (optic) → Target | synapses: 12
+  Neuron 720575940633380127 (visual_projection) → Target | synapses: 9
+  Neuron 720575940625351975 (optic) → Target | synapses: 7
+  Neuron 720575940627147978 (optic) → Target | synapses: 7
+
+--- Top 10 outgoing neighbors ---
+  Target → Neuron 720575940616433989 (optic) | synapses: 35
+  Target → Neuron 720575940620034462 (optic) | synapses: 33
+  Target → Neuron 720575940625370044 (optic) | synapses: 26
+  Target → Neuron 720575940620034462 (optic) | synapses: 25
+  Target → Neuron 720575940640285272 (sensory) | synapses: 24
+  Target → Neuron 720575940659625601 (optic) | synapses: 20
+  Target → Neuron 720575940622720169 (optic) | synapses: 12
+  Target → Neuron 720575940633380127 (visual_projection) | synapses: 9
+  Target → Neuron 720575940627147978 (optic) | synapses: 7
+  Target → Neuron 720575940625351975 (optic) | synapses: 7
+
+---
+
+Target neuron index: 108461
+Root ID: 720575940632343352
+True class: optic
+Predicted class: optic
+Confidence: 0.8666
+Correct: Yes
+
+--- Top 10 incoming neighbors ---
+  Neuron 720575940618331577 (optic) → Target | synapses: 48
+  Neuron 720575940621602013 (optic) → Target | synapses: 32
+  Neuron 720575940605899692 (visual_projection) → Target | synapses: 25
+  Neuron 720575940630211072 (optic) → Target | synapses: 17
+  Neuron 720575940617995860 (optic) → Target | synapses: 17
+  Neuron 720575940611685525 (optic) → Target | synapses: 13
+  Neuron 720575940622850997 (optic) → Target | synapses: 12
+  Neuron 720575940639627392 (optic) → Target | synapses: 12
+  Neuron 720575940627175879 (visual_projection) → Target | synapses: 12
+  Neuron 720575940618815168 (optic) → Target | synapses: 12
+
+--- Top 10 outgoing neighbors ---
+  Target → Neuron 720575940618331577 (optic) | synapses: 48
+  Target → Neuron 720575940621602013 (optic) | synapses: 32
+  Target → Neuron 720575940605899692 (visual_projection) | synapses: 25
+  Target → Neuron 720575940617995860 (optic) | synapses: 17
+  Target → Neuron 720575940630211072 (optic) | synapses: 17
+  Target → Neuron 720575940611685525 (optic) | synapses: 13
+  Target → Neuron 720575940627175879 (visual_projection) | synapses: 12
+  Target → Neuron 720575940639627392 (optic) | synapses: 12
+  Target → Neuron 720575940618815168 (optic) | synapses: 12
+  Target → Neuron 720575940622850997 (optic) | synapses: 12
+
+---
+
+Target neuron index: 94172
+Root ID: 720575940629476102
+True class: optic
+Predicted class: optic
+Confidence: 0.9945
+Correct: Yes
+
+--- Top 10 incoming neighbors ---
+  Neuron 720575940625169651 (optic) → Target | synapses: 13
+  Neuron 720575940615107014 (optic) → Target | synapses: 13
+  Neuron 720575940628565903 (optic) → Target | synapses: 12
+  Neuron 720575940630750780 (optic) → Target | synapses: 11
+  Neuron 720575940619524254 (optic) → Target | synapses: 11
+  Neuron 720575940632117775 (optic) → Target | synapses: 10
+  Neuron 720575940640305536 (optic) → Target | synapses: 10
+  Neuron 720575940614964222 (optic) → Target | synapses: 10
+  Neuron 720575940622829601 (optic) → Target | synapses: 9
+  Neuron 720575940633759661 (optic) → Target | synapses: 8
+
+--- Top 10 outgoing neighbors ---
+  Target → Neuron 720575940625169651 (optic) | synapses: 13
+  Target → Neuron 720575940615107014 (optic) | synapses: 13
+  Target → Neuron 720575940628565903 (optic) | synapses: 12
+  Target → Neuron 720575940630750780 (optic) | synapses: 11
+  Target → Neuron 720575940619524254 (optic) | synapses: 11
+  Target → Neuron 720575940614964222 (optic) | synapses: 10
+  Target → Neuron 720575940640305536 (optic) | synapses: 10
+  Target → Neuron 720575940632117775 (optic) | synapses: 10
+  Target → Neuron 720575940622829601 (optic) | synapses: 9
+  Target → Neuron 720575940633759661 (optic) | synapses: 8
+
+---
+
+Target neuron index: 12473
+Root ID: 720575940611853006
+True class: optic
+Predicted class: optic
+Confidence: 0.9827
+Correct: Yes
+
+--- Top 10 incoming neighbors ---
+  Neuron 720575940615761986 (optic) → Target | synapses: 30
+  Neuron 720575940628908548 (optic) → Target | synapses: 24
+  Neuron 720575940620782757 (optic) → Target | synapses: 20
+  Neuron 720575940613779631 (optic) → Target | synapses: 18
+  Neuron 720575940616141580 (optic) → Target | synapses: 18
+  Neuron 720575940630072311 (optic) → Target | synapses: 15
+  Neuron 720575940616233945 (optic) → Target | synapses: 14
+  Neuron 720575940628994101 (optic) → Target | synapses: 13
+  Neuron 720575940624554749 (optic) → Target | synapses: 12
+  Neuron 720575940629060355 (optic) → Target | synapses: 11
+
+--- Top 10 outgoing neighbors ---
+  Target → Neuron 720575940615761986 (optic) | synapses: 30
+  Target → Neuron 720575940628908548 (optic) | synapses: 24
+  Target → Neuron 720575940620782757 (optic) | synapses: 20
+  Target → Neuron 720575940613779631 (optic) | synapses: 18
+  Target → Neuron 720575940616141580 (optic) | synapses: 18
+  Target → Neuron 720575940630072311 (optic) | synapses: 15
+  Target → Neuron 720575940616233945 (optic) | synapses: 14
+  Target → Neuron 720575940628994101 (optic) | synapses: 13
+  Target → Neuron 720575940624554749 (optic) | synapses: 12
+  Target → Neuron 720575940629060355 (optic) | synapses: 11

@@ -1,0 +1,283 @@
+{
+  "3a_per_source_ranking": {
+    "n_sources_evaluated": 200,
+    "total_positives": 1600,
+    "mean_recall@10": 0.8135809055091139,
+    "median_recall@10": 1.0,
+    "hit_rate@10": 0.995,
+    "mean_recall@50": 0.9903164883940591,
+    "median_recall@50": 1.0,
+    "hit_rate@50": 1.0,
+    "mean_recall@100": 0.9990877192982456,
+    "median_recall@100": 1.0,
+    "hit_rate@100": 1.0
+  },
+  "3a_random_baseline": {
+    "mean_recall@10": 0.098,
+    "median_recall@10": 0.0,
+    "hit_rate@10": 0.42,
+    "mean_recall@50": 0.46299999999999997,
+    "median_recall@50": 0.4,
+    "hit_rate@50": 0.96,
+    "mean_recall@100": 0.9569999999999999,
+    "median_recall@100": 1.0,
+    "hit_rate@100": 1.0
+  },
+  "3b_seed_stability": {
+    "43": {
+      "score_stats": {
+        "count": 100000,
+        "min": 0.0,
+        "max": 1.0,
+        "mean": 0.13397797166666667,
+        "median": 0.03,
+        "std": 0.21926338045076513,
+        "p90": 0.48,
+        "p95": 0.68,
+        "p99": 0.9
+      },
+      "n_exact_1": 47,
+      "n_ge_09": 1148
+    },
+    "44": {
+      "score_stats": {
+        "count": 100000,
+        "min": 0.0,
+        "max": 1.0,
+        "mean": 0.13416276333333332,
+        "median": 0.03,
+        "std": 0.21978585844278212,
+        "p90": 0.48,
+        "p95": 0.68,
+        "p99": 0.9
+      },
+      "n_exact_1": 41,
+      "n_ge_09": 1105
+    },
+    "45": {
+      "score_stats": {
+        "count": 100000,
+        "min": 0.0,
+        "max": 1.0,
+        "mean": 0.1362714,
+        "median": 0.03,
+        "std": 0.2230955376112216,
+        "p90": 0.49,
+        "p95": 0.69,
+        "p99": 0.91
+      },
+      "n_exact_1": 42,
+      "n_ge_09": 1266
+    },
+    "jaccard": {
+      "43_vs_44": 0.0,
+      "43_vs_45": 0.0,
+      "44_vs_45": 0.0
+    }
+  },
+  "3c_score_saturation": {
+    "score_=1.0": {
+      "count": 34,
+      "percentage": 0.03
+    },
+    "score_>=0.99": {
+      "count": 92,
+      "percentage": 0.09
+    },
+    "score_>=0.95": {
+      "count": 454,
+      "percentage": 0.45
+    },
+    "score_>=0.9": {
+      "count": 1103,
+      "percentage": 1.1
+    },
+    "score_>=0.75": {
+      "count": 3604,
+      "percentage": 3.6
+    },
+    "score_>=0.5": {
+      "count": 9257,
+      "percentage": 9.26
+    }
+  },
+  "3d_calibration": {
+    "brier_score": 0.0536,
+    "log_loss": 0.1914,
+    "ece": 0.0411,
+    "n_samples": 2087948,
+    "n_positive": 1043974,
+    "n_negative": 1043974,
+    "calibration_curve": [
+      {
+        "bin": "0.0-0.1",
+        "count": 706494,
+        "mean_predicted": 0.0175,
+        "observed_positive_rate": 0.001
+      },
+      {
+        "bin": "0.1-0.2",
+        "count": 107910,
+        "mean_predicted": 0.1388,
+        "observed_positive_rate": 0.0267
+      },
+      {
+        "bin": "0.2-0.3",
+        "count": 63390,
+        "mean_predicted": 0.2425,
+        "observed_positive_rate": 0.0971
+      },
+      {
+        "bin": "0.3-0.4",
+        "count": 52126,
+        "mean_predicted": 0.3443,
+        "observed_positive_rate": 0.2084
+      },
+      {
+        "bin": "0.4-0.5",
+        "count": 51632,
+        "mean_predicted": 0.4456,
+        "observed_positive_rate": 0.3564
+      },
+      {
+        "bin": "0.5-0.6",
+        "count": 59314,
+        "mean_predicted": 0.5468,
+        "observed_positive_rate": 0.5334
+      },
+      {
+        "bin": "0.6-0.7",
+        "count": 87066,
+        "mean_predicted": 0.6536,
+        "observed_positive_rate": 0.7036
+      },
+      {
+        "bin": "0.7-0.8",
+        "count": 108596,
+        "mean_predicted": 0.7534,
+        "observed_positive_rate": 0.8331
+      },
+      {
+        "bin": "0.8-0.9",
+        "count": 249779,
+        "mean_predicted": 0.8572,
+        "observed_positive_rate": 0.9242
+      },
+      {
+        "bin": "0.9-1.0",
+        "count": 601641,
+        "mean_predicted": 0.9642,
+        "observed_positive_rate": 0.9819
+      }
+    ]
+  },
+  "3f_rank_distribution": {
+    "n_evaluated": 5000,
+    "median_rank": 1.0,
+    "mean_rank": 2.8058,
+    "p10_rank": 1.0,
+    "p25_rank": 1.0,
+    "p50_rank": 1.0,
+    "p75_rank": 3.0,
+    "p90_rank": 6.0,
+    "frac_ranked_1": 0.5358,
+    "frac_in_top_10": 0.9586,
+    "frac_in_top_50": 1.0,
+    "frac_in_top_100": 1.0
+  },
+  "3g_exclusion_audit": {
+    "total_candidates": 100000,
+    "self_loops": 0,
+    "known_edges": 0,
+    "duplicate_pairs": 0,
+    "invalid_ids": 0,
+    "non_finite_scores": 0,
+    "out_of_range_scores": 0
+  },
+  "3h_biological_patterns": {
+    "n_analyzed": 1000,
+    "nt_type_pairs": {
+      "unknown -> unknown": 973,
+      "GABA -> unknown": 9,
+      "ACH -> unknown": 8,
+      "unknown -> ACH": 7,
+      "GABA -> GABA": 1,
+      "GLUT -> unknown": 1,
+      "unknown -> GLUT": 1
+    },
+    "super_class_pairs": {
+      "unknown -> unknown": 973,
+      "visual_centrifugal -> unknown": 9,
+      "central -> unknown": 5,
+      "unknown -> central": 5,
+      "optic -> unknown": 3,
+      "unknown -> optic": 2,
+      "sensory -> unknown": 1,
+      "visual_centrifugal -> optic": 1,
+      "unknown -> visual_projection": 1
+    },
+    "flow_pairs": {
+      "unknown -> unknown": 973,
+      "intrinsic -> unknown": 17,
+      "unknown -> intrinsic": 8,
+      "afferent -> unknown": 1,
+      "intrinsic -> intrinsic": 1
+    }
+  },
+  "feature_importance": {
+    "top10": [
+      [
+        "area_nm",
+        0.020284687034379086
+      ],
+      [
+        "length_nm",
+        0.016504113704803963
+      ],
+      [
+        "size_nm",
+        0.015242508091564336
+      ],
+      [
+        "coord_x",
+        0.014236707285972566
+      ],
+      [
+        "coord_y",
+        0.009988561532909718
+      ],
+      [
+        "gaba_avg",
+        0.008849340029929171
+      ],
+      [
+        "coord_z",
+        0.008516765546370998
+      ],
+      [
+        "ach_avg",
+        0.007276865226615912
+      ],
+      [
+        "da_avg",
+        0.007020543530458716
+      ],
+      [
+        "nt_type_score",
+        0.005932732829142756
+      ]
+    ],
+    "groups": {
+      "source biology": 0.05203130883074738,
+      "target biology": 0.03307460884881146,
+      "source-target difference": 0.022814174303445626,
+      "source-target interaction": 0.0252943198656785
+    }
+  },
+  "3e_ranking_vs_probability": {
+    "brier_score": 0.0536,
+    "ece": 0.0411,
+    "mean_recall_at_50": 0.9903164883940591,
+    "interpretation": "The RF model is more appropriate as a ranking system than as a calibrated probability estimator."
+  }
+}
