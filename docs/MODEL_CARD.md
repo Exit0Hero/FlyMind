@@ -6,6 +6,8 @@
 **Framework:** scikit-learn
 **Estimators:** 100
 **File:** `models/link_prediction_rf.pkl`
+**Version:** FlyMind-RF v1.0.0
+**Artifact SHA-256:** `c6cdf6ca49d9216b8a7eff8e2b90cf9c0bfa8f0619fc1b5bfed74c7b65180316`
 
 ## Intended Use
 
@@ -82,6 +84,20 @@ Training edges touching held-out neurons are excluded, testing generalization to
 - **Ranking, not probability:** Scores are model-derived rankings, not calibrated probabilities
 - **No biological validation:** Candidate connections require experimental confirmation
 - **Statistical, not causal:** Feature importance describes model behavior, not biological causation
+
+## Production Inference
+
+| Property | Value |
+|----------|-------|
+| Service | `FlyMindInferenceService` |
+| Feature contract | 60-dimensional pair features |
+| Validation | Hash-verified, schema-validated |
+| Error handling | Structured exceptions |
+| Health check | `check_model_health()` |
+| Configuration | Environment variables |
+| Documentation | `docs/PRODUCTION_INFERENCE.md` |
+
+**Note:** Production hardening does not constitute a new scientific validation of the model.
 
 ## Citation
 
