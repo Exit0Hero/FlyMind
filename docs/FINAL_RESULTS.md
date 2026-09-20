@@ -153,7 +153,7 @@ All clean.
 
 ## 11. Biological Pattern Observations (3H)
 
-- **97.3%** of top candidates have unknown NT types (19K neurons lack annotation)
+- **97.3%** of top candidates involve neurons with unknown NT types (reflecting the 14.1% unknown NT rate across the full dataset)
 - Known-type pairs: GABA and ACH enriched
 - **Post-hoc observation only**, not a causal claim
 

@@ -89,7 +89,7 @@ FAFB dataset as described at [https://flywire.ai/](https://flywire.ai/).
 
 - **Dataset-specific:** Results apply to this specific FlyWire dataset
 - **Not causal:** Model learns statistical associations, not causal mechanisms
-- **Unknown annotations:** 97.3% of neurons have unknown neurotransmitter annotations
+- **Unknown annotations:** 14.1% of neurons (19,658) lack neurotransmitter annotations
 - **Requires validation:** Candidate connections require biological confirmation
 - **Not behavior:** Does not predict neural circuits or fly behavior
 

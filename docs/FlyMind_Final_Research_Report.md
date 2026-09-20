@@ -105,7 +105,7 @@ We use the FlyWire FAFB (Full Adult Fly Brain) connectome dataset for *Drosophil
 | Primary identifier | `root_id` (FlyWire uint64) |
 | Brain regions (neuropils) | 76 |
 | Neurotransmitter types | ACH, GABA, GLUT, DA, SER, OCT |
-| Super-classes | 10 (motor, sensory, central, etc.) |
+| Super-classes | 10 (optic, central, sensory, visual_projection, ascending, descending, sensory_ascending, visual_centrifugal, motor, endocrine) |
 
 ### 3.3 Connections
 
@@ -129,9 +129,22 @@ Neurons are annotated with:
 - **Classification hierarchy**: `super_class`, `class`, `sub_class`, `primary_type`
 - **Information flow**: `flow` direction label
 
-### 3.5 Missing Annotations
+### 3.5 Neurotransmitter Annotations
 
-**Critical limitation:** 97.3% of neurons (approximately 135,500 of 139,255) have unknown neurotransmitter annotations. The `nt_type` labels are predictions, not experimental measurements, for the majority of neurons.
+The neurotransmitter type annotations are predicted labels, not experimental measurements:
+
+| NT Type | Count | Percentage |
+|---------|------:|-----------:|
+| ACH | 82,298 | 59.1% |
+| GLUT | 19,605 | 14.1% |
+| GABA | 16,017 | 11.5% |
+| SER | 1,021 | 0.7% |
+| DA | 584 | 0.4% |
+| OCT | 72 | 0.1% |
+| **Unknown** | **19,658** | **14.1%** |
+| **Total** | **139,255** | **100%** |
+
+**Note:** 14.1% of neurons (19,658) lack neurotransmitter type annotations. The `nt_type` labels are predictions, not experimental measurements.
 
 ---
 
@@ -243,14 +256,16 @@ The dataset contains 10 super-classes: motor, sensory, central, visual_projectio
 
 ### 6.5 Results
 
+Source: `results/reports/baseline_results.json` (RF models), `results/reports/gnn_results.json` (GraphSAGE)
+
 | Model | Accuracy | Weighted F1 | Macro F1 |
 |-------|----------|-------------|----------|
-| Majority baseline | — | — | — |
-| Logistic Regression | — | — | — |
-| RF Biology | — | — | — |
-| RF Graph-only | — | — | — |
-| RF Bio + Graph | — | — | — |
+| RF Biology | 0.9727 | 0.9733 | 0.8724 |
+| RF Graph-only | 0.6655 | 0.6816 | 0.3996 |
+| RF Bio + Graph | 0.9773 | 0.9775 | 0.9005 |
 | GraphSAGE | 0.9265 | 0.9372 | 0.7066 |
+
+**Note:** Majority baseline and Logistic Regression results are not stored in the authoritative result files and are marked as UNVERIFIED.
 
 ### 6.6 Interpretation
 
@@ -377,9 +392,9 @@ GraphSAGE's performance is limited in the cold-start setting because held-out ne
 
 ## 11. Experiment 2C — Aborted Experiment
 
-Experiment 2C (neural network ablation) was attempted but aborted due to memory constraints (RAM exhaustion on the ~5.5 GB machine). The MLP cold-start evaluation completed partially (ROC-AUC 0.982) but GraphSAGE crashed before completion.
+Experiment 2C (neural network ablation) was attempted but aborted due to memory constraints (RAM exhaustion on the ~5.5 GB machine). The experiment did not complete successfully.
 
-**This experiment is not treated as a scientific result.** No partial metrics from Experiment 2C are included in final conclusions. The experiment files exist in the repository but are marked as incomplete.
+**This experiment is not treated as a scientific result.** No metrics from Experiment 2C are included in final conclusions. The experiment files exist in the repository but are marked as incomplete.
 
 ---
 
@@ -389,7 +404,7 @@ Experiment 2C (neural network ablation) was attempted but aborted due to memory 
 
 The validated Random Forest model is used to rank candidate target neurons for each source neuron:
 
-1. Sample candidate pool (1000 random targets per source)
+1. Sample candidate pool (100 targets per source, with 3x oversampling for filtering)
 2. Exclude self-loops
 3. Exclude known observed edges
 4. Exclude duplicate pairs
@@ -494,7 +509,7 @@ All checks passed. The candidate set is clean and consistent.
 
 Post-hoc analysis of candidate rankings by biological properties:
 
-- **97.3%** of top candidates have unknown neurotransmitter types (19K neurons lack NT annotation)
+- **97.3%** of top candidates involve neurons with unknown neurotransmitter types (reflecting the 14.1% unknown NT rate across the full dataset)
 - Known-type candidates show enrichment for GABA and ACH
 - Candidate pairs show spatial proximity patterns
 
@@ -589,7 +604,7 @@ Candidate ranking could help prioritize pairs for connectomic or experimental va
 ### 17.1 Dataset Limitations
 
 - **Dataset-specific coverage:** Results apply to the FlyWire FAFB dataset and may not generalize to other connectomes
-- **Incomplete annotations:** 97.3% of neurons have unknown neurotransmitter annotations
+- **Incomplete annotations:** 14.1% of neurons (19,658) have unknown neurotransmitter annotations
 - **Connectome source limitations:** The evaluated graph is a filtered subset of the full FlyWire dataset
 
 ### 17.2 Feature Limitations
@@ -639,7 +654,7 @@ All experiments use random seed 42 (defined in `src/link_prediction/config.py`).
 ### 18.4 Memory-Safe Engineering
 
 - Compact uint64 edge representations (~30 MB for 3.7M edges)
-- Chunked pair feature construction (10K pairs/chunk)
+- Chunked pair feature construction (50K pairs/chunk for feature generation, 10K for candidate scoring)
 - Disk-backed intermediates (numpy memmap)
 - No all-pairs enumeration (1M candidates vs 19.4B possible pairs)
 
@@ -655,15 +670,18 @@ All experiments use random seed 42 (defined in `src/link_prediction/config.py`).
 
 | Suite | Tests | Status |
 |-------|------:|--------|
-| test_link_prediction.py | 8 | PASS |
-| test_cold_start.py | 7 | PASS |
+| test_inference.py | 30 | PASS |
 | test_experiment_2d.py | 10 | PASS |
 | test_experiment_3.py | 16 | PASS |
 | test_data_integrity.py | 9 | PASS |
 | test_pipeline.py | 6 | PASS |
 | test_presentation.py | 26 | PASS |
 | test_dashboard.py | 19 | PASS |
-| **Total** | **101** | **PASS** |
+| test_link_prediction.py | 8 | PASS (slow) |
+| test_cold_start.py | 7 | PASS (slow) |
+| **Total** | **131** | **PASS** |
+
+Note: 116 tests pass in the fast suite (excluding slow raw-data tests). All 131 tests pass when slow tests are included.
 
 ---
 

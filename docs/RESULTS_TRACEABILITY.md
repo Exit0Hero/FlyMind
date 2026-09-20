@@ -14,7 +14,8 @@ This document maps every major quantitative claim in the research report to its 
 | Brain regions | 76 | Neuron table metadata | `data/processed/neuron_table.parquet` |
 | NT types | 6 | Neuron table `nt_type` | `data/processed/neuron_table.parquet` |
 | Super-classes | 10 | Neuron table `super_class` | `data/processed/neuron_table.parquet` |
-| Unknown NT % | 97.3% | Calculated from neuron table | `data/processed/neuron_table.parquet` |
+| Unknown NT count | 19,658 | Calculated from neuron table | `data/processed/neuron_table.parquet` |
+| Unknown NT % | 14.1% | Calculated from neuron table | `data/processed/neuron_table.parquet` |
 | Missing morphology | 27 neurons | Feature matrix NaN count | `data/processed/link_prediction/X_features.npy` |
 
 ---
@@ -172,7 +173,10 @@ This document maps every major quantitative claim in the research report to its 
 | test_pipeline.py | 6 tests | Test suite | `tests/test_pipeline.py` |
 | test_presentation.py | 26 tests | Test suite | `tests/test_presentation.py` |
 | test_dashboard.py | 19 tests | Test suite | `tests/test_dashboard.py` |
-| **Total** | **116 tests** | All suites | `tests/` |
+| test_link_prediction.py | 8 tests | Test suite (slow) | `tests/test_link_prediction.py` |
+| test_cold_start.py | 7 tests | Test suite (slow) | `tests/test_cold_start.py` |
+| **Total (fast)** | **116 tests** | Fast suites | `tests/` |
+| **Total (all)** | **131 tests** | All suites | `tests/` |
 
 ---
 

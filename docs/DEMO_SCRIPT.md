@@ -46,7 +46,7 @@
    - **Location:** centroid coordinates
    - **Connectivity:** outgoing/incoming connections
 
-**Say:** "97.3% of neurons have unknown neurotransmitter annotations. This is a known limitation."
+**Say:** "14.1% of neurons lack neurotransmitter annotations. This is a known limitation."
 
 ---
 

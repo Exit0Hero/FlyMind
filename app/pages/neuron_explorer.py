@@ -85,7 +85,7 @@ def render(demo_id=None):
 
     st.markdown("""
     <div class="disclaimer">
-    <strong>Note:</strong> 97.3% of neurons have unknown neurotransmitter annotations.
+    <strong>Note:</strong> 14.1% of neurons lack neurotransmitter annotations.
     The "nt_type" class is predicted, not measured.
     </div>
     """, unsafe_allow_html=True)

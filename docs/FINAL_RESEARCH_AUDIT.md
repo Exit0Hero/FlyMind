@@ -254,7 +254,7 @@ All checks passed: 0 self-loops, 0 known edges, 0 duplicates, 0 invalid IDs, 0 n
 
 ### 3H: Biological Patterns
 
-97.3% of top candidates have unknown NT types (19K neurons lack NT annotation). Known-type candidates show enrichment for GABA and ACH. This is a post-hoc observation, not a causal claim.
+97.3% of top candidates involve neurons with unknown NT types (reflecting the 14.1% unknown NT rate across the full dataset). Known-type candidates show enrichment for GABA and ACH. This is a post-hoc observation, not a causal claim.
 
 ---
 
@@ -370,7 +370,7 @@ See `docs/FINAL_RESULTS.md` for the canonical results table.
 ## 18. Limitations
 
 1. Structural connectome only (no behavioral labels)
-2. Incomplete neurotransmitter annotation (19K of 139K neurons unknown)
+2. Incomplete neurotransmitter annotation (19,658 of 139,255 neurons lack NT type labels)
 3. Candidate edges are hypotheses, not confirmed connections
 4. RF ranking rather than literal biological probability
 5. Cold-start protocol removes observed training neighborhoods

@@ -51,7 +51,7 @@ def render():
         - 139,255 neurons from FlyWire FAFB connectome
         - 3,732,460 unique directed edges
         - Dataset-specific coverage and filtering
-        - **97.3% of neurons have unknown neurotransmitter annotations**
+        - **14.1% of neurons (19,658) lack neurotransmitter annotations**
         - Annotation quality varies across brain regions
         """)
 

@@ -192,14 +192,14 @@ Peak memory: ~500 MB (model + data + working set).
 - Scores represent relative likelihood, not absolute biological probability
 - Candidate connections are **hypotheses** requiring experimental validation
 - The model generalizes to unseen neurons (cold-start validated)
-- 97.3% of top candidates involve neurons with unknown NT types
+- 97.3% of top candidates involve neurons with unknown NT types (reflecting the 14.1% unknown NT rate across the full dataset)
 
 ---
 
 ## 8. Limitations
 
 1. **Structural connectome only** -- no behavioral or functional data
-2. **Incomplete NT annotation** -- 19K of 139K neurons lack NT labels
+2. **Incomplete NT annotation** -- 19,658 of 139,255 neurons (14.1%) lack NT type labels
 3. **Candidate sampling** -- not all pairs evaluated, sampling-based approach
 4. **Cold-start tradeoff** -- test node neighborhoods hidden, reducing heuristic signal
 5. **Ranking, not probability** -- scores are relative rankings, not calibrated probabilities

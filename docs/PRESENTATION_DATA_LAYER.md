@@ -204,7 +204,7 @@ Peak memory: ~400 MB (datastore + inference layer).
 - All candidate connections are **hypotheses**, not discoveries
 - Observed connections come from the connectome dataset
 - The RF model is a **computational ranking system**
-- 97.3% of top candidates involve neurons with unknown NT types
+- 97.3% of top candidates involve neurons with unknown NT types (reflecting the 14.1% unknown NT rate across the full dataset)
 - Scores represent relative likelihood, not biological probability
 
 ---
@@ -212,7 +212,7 @@ Peak memory: ~400 MB (datastore + inference layer).
 ## 7. Known Limitations
 
 1. **Structural connectome only** -- no behavioral or functional data
-2. **Incomplete NT annotation** -- ~19K of 139K neurons lack NT labels
+2. **Incomplete NT annotation** -- 19,658 of 139,255 neurons (14.1%) lack NT type labels
 3. **Candidate sampling** -- not all pairs evaluated
 4. **Cold-start tradeoff** -- test node neighborhoods hidden
 5. **Ranking, not probability** -- scores are relative rankings

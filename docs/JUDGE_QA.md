@@ -74,7 +74,7 @@ The model learns statistical associations from the evaluated connectome.
 
 ### What happens with unknown neurotransmitter annotations?
 
-97.3% of neurons have unknown neurotransmitter annotations. The model uses:
+14.1% of neurons (19,658) lack neurotransmitter type annotations. The model uses:
 - `nt_type_score` (confidence in prediction)
 - Individual NT sub-scores (ach_avg, gaba_avg, etc.)
 
