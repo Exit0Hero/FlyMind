@@ -1,0 +1,22 @@
+cff-version: 1.2.0
+title: "FlyMind: Predicting Directed Neuron Connectivity from Biological and Morphological Features in the Drosophila Connectome"
+type: software
+authors:
+  - name: "FlyMind Research Group"
+date-released: "2026-09-20"
+version: "1.0.0"
+repository-code: "https://github.com/akkushon-kamen/flymind"
+license: "See repository for license information"
+description: |
+  FlyMind learns how neuron-level biological and morphological properties
+  relate to directed connectivity in the fruit-fly brain, validates those
+  relationships on previously unseen neurons, and ranks model-suggested
+  candidate connections for further investigation.
+keywords:
+  - connectomics
+  - drosophila
+  - flywire
+  - link-prediction
+  - random-forest
+  - neuroscience
+  - machine-learning

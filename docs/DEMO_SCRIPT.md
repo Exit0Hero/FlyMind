@@ -1,117 +1,107 @@
 # FlyMind Demo Script
 
 **Duration:** 3–5 minutes
-
-**Setup:** Run `streamlit run app/streamlit_app.py` before the demo. Enable "Demo Mode" in the sidebar.
+**Setup:** Run `streamlit run app/streamlit_app.py` before the demo.
 
 ---
 
-## 0:00–0:30 — Problem Statement
+## 1. Problem (30 seconds)
 
-> "FlyMind explores whether biological and morphological properties of individual neurons
-> can predict directed connectivity in the fruit-fly connectome."
+> "The fruit-fly connectome contains millions of directed connections between neurons. We wanted to know whether measurable properties of neurons can help predict which neurons are connected."
 
 **Key points:**
-- FlyWire FAFB dataset: 139,255 neurons, 3.73M directed edges
-- Research question: Can neuron features predict connectivity, and does it generalize to unseen neurons?
-
-**Show:** Overview page with key metrics (139,255 neurons, 3.73M edges, ~0.98 ROC-AUC)
-
----
-
-## 0:30–1:00 — Approach
-
-> "We represent each neuron using 15 biological and morphological features, then train
-> a Random Forest to score source-target pairs."
-
-**Key points:**
-- 13 numeric features (morphology, spatial, neurotransmitter) + 2 categorical
-- Pair engineering: source, target, difference, product → 60 dimensions
-- Validated Random Forest (100 estimators)
-
-**Show:** Architecture diagram on Overview page
+- FlyWire FAFB dataset: 139,255 neurons
+- 3.73M directed synaptic edges
+- Research question: Can neuron features predict connectivity?
 
 ---
 
-## 1:00–2:00 — Neuron Explorer
+## 2. Dataset (30 seconds)
 
-> "Let's look at a specific neuron."
+**Show:** Overview page with dataset statistics.
 
-**Actions:**
-1. Enable "Demo Mode" in sidebar → neuron `720575940597856265` loads automatically
-2. Or type `720575940597856265` in the search box
-3. Point out:
-   - **Identity:** Tm16, ACH, optic super-class
-   - **Morphology:** length, area, size
-   - **Location:** centroid coordinates
-   - **Connectivity:** outgoing/incoming connections
-
-**Say:** "14.1% of neurons lack neurotransmitter annotations. This is a known limitation."
+> "Each neuron is described by 15 biological and morphological features including neurotransmitter expression, neurite length, soma size, and spatial coordinates."
 
 ---
 
-## 2:00–3:00 — Candidate Ranking
+## 3. Research Result (45 seconds)
 
-> "Now let's ask FlyMind to rank candidate target connections for this neuron."
+**Show:** Cold-start results on Overview page.
 
-**Actions:**
-1. Go to "Candidate Ranking" page
-2. Enter source: `720575940597856265`
-3. Set K = 10
-4. Show ranked table
-5. Select top candidate
-6. Show source vs target comparison
+> "We trained a Random Forest model and evaluated it on previously unseen neurons—where training edges touching those neurons were excluded. The model achieved ROC-AUC 0.980 and PR-AUC 0.974."
 
-**Say:** "These are model-suggested candidate connections. A high ranking score indicates
-statistical association in the evaluated model, not proof that a biological connection exists."
-
-**Show:** The disclaimer about ranking scores not being literal probabilities.
+Explain cold-start:
+> "This means the model learned patterns from some neurons and was tested on completely different neurons it had never seen during training."
 
 ---
 
-## 3:00–4:00 — Validation
+## 4. Live Neuron Exploration (45 seconds)
 
-> "How do we know this works?"
+**Show:** Neuron Explorer page.
 
-**Actions:**
-1. Go to "Research Results" → "Cold-Start" tab
-2. Show cold-start ROC-AUC (~0.98) and PR-AUC (0.974)
-3. Explain: "Training edges touching held-out neurons are excluded. The model is evaluated
-   on previously unseen neurons."
+1. Enter neuron ID: `720575940597856265`
+2. Show:
+   - Neuron identity (Tm16, ACH, optic)
+   - Morphology (length, area, size)
+   - Connectivity summary
 
-**Say:** "Node-level biological and morphological information generalized strongly to
-held-out neurons in this evaluation. This does not imply universal biological generalization."
+> "Each neuron has distinct biological properties. The model uses these properties to predict connectivity."
 
 ---
 
-## 4:00–5:00 — Research Takeaway
+## 5. Connection Prediction (45 seconds)
 
-> "What did we learn?"
+**Show:** Connection Predictor page.
 
-**Key points:**
-1. Strong node-level predictive signal (ROC-AUC ~0.98)
-2. Generalization to held-out neurons (cold-start)
-3. Candidate ranking for hypothesis generation
-4. Limitations: dataset-specific, not causal, requires biological validation
+1. Source: `720575940597856265`
+2. Target: `720575940602380768`
+3. Show:
+   - Connection status (observed/not observed)
+   - Model ranking score
+   - Source vs target comparison
 
-**Show:** About / Limitations page — read the "What FlyMind Does NOT Claim" section
+> "The model assigns a ranking score to each pair. Higher scores indicate stronger statistical association in the model."
 
-**Closing:** "FlyMind provides a research interface for exploring connectivity hypotheses.
-Biological validation requires wet-lab experiments."
+---
+
+## 6. Candidate Ranking (45 seconds)
+
+**Show:** Candidate Ranking page.
+
+1. Source: `720575940597856265`
+2. Show top 10 candidates
+3. Select one candidate
+4. Show source vs target comparison
+
+> "These are model-suggested candidates for further investigation. They are not confirmed biological connections. Recall@10 is 0.814—meaning 81% of true connections appear in the top 10 candidates."
+
+---
+
+## 7. Limitations (30 seconds)
+
+**Show:** About / Limitations page.
+
+> "Important limitations: This is dataset-specific to FlyWire. 14.1% of neurons lack neurotransmitter annotations. Candidate connections require experimental validation. The model provides rankings, not biological proof."
+
+---
+
+## 8. Closing (15 seconds)
+
+> "FlyMind does not claim to replace biological validation. It provides a scalable computational way to prioritize connectivity hypotheses for further investigation."
 
 ---
 
 ## Verified Demo Neurons
 
-| ID | Type | Super-class | NT | Use case |
-|----|------|-------------|-----|----------|
-| `720575940597856265` | Tm16 | optic | ACH | Standard demo neuron |
-| `720575940602380768` | CB1538 | central | GABA | Central neuron example |
-| `720575940609282825` | lLN2F_b | central | GABA | High connectivity |
+| ID | Type | Super-class | NT |
+|----|------|-------------|-----|
+| `720575940597856265` | Tm16 | optic | ACH |
+| `720575940602380768` | CB1538 | central | GABA |
+| `720575940609282825` | lLN2F_b | central | GABA |
 
 ## Tips
 
-- Keep the "Demo Mode" checkbox enabled for quick access to example neurons
-- If asked about GNN results, show the Cold-Start tab and explain RF outperformed GraphSAGE
-- If asked about Experiment 2C, explain it was aborted due to memory constraints
-- Never claim connections are "discovered" — always say "model-suggested candidates"
+- Keep "Demo Mode" enabled in sidebar for quick access
+- If asked about GNN: "GraphSAGE was evaluated comparatively but underperformed RF in these experiments"
+- If asked about Experiment 2C: "It was aborted due to memory constraints"
+- Never claim connections are "discovered" — always "model-suggested candidates"
