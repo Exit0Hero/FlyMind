@@ -1,0 +1,51 @@
+.git
+.github
+.pytest_cache
+__pycache__
+*.pyc
+*.pyo
+.env
+.env.*
+.venv
+venv
+notebooks/
+tests/
+docs/
+*.md
+!requirements.txt
+.dockerignore
+Dockerfile
+.gitignore
+
+# Raw data
+data/raw/
+
+# All processed data EXCEPT what's needed at runtime
+data/processed/edges_buhmann.parquet
+data/processed/edges_princeton.parquet
+data/processed/neuron_table.csv
+data/processed/link_prediction/cold_start/
+data/processed/link_prediction/X.npy
+data/processed/link_prediction/heuristics.npy
+data/processed/link_prediction/test_*.npy
+data/processed/link_prediction/train_*.npy
+data/processed/link_prediction/val_*.npy
+data/processed/link_prediction/split_*.npy
+data/processed/link_prediction/neg_*.npy
+
+# Results (keep only reports, figures, presentation)
+results/candidates/
+results/reports/file_audit.json
+results/reports/gnn_*.json
+results/reports/graph_stats.json
+results/reports/experiment_1_*.json
+
+# Models (keep only RF)
+models/link_prediction_gnn_cold.pt
+models/link_prediction_gnn.pt
+models/graphsage_superclass_best.pt
+models/preprocessor_config.json
+
+# Misc
+.pytest_cache
+*.egg-info
