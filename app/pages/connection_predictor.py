@@ -1,124 +1,130 @@
-"""FlyMind Dashboard — Connection Predictor Page."""
+"""Connection Predictor page — evaluate a specific source-target pair."""
 
 import streamlit as st
 import pandas as pd
-import numpy as np
 from app.services import get_store
-from src.link_prediction.presentation import FEATURE_GROUPS
 
 
 def render():
-    st.title("Connection Predictor")
-    st.markdown("Score a directed neuron pair for connectivity likelihood.")
-
     store = get_store()
+    df = store.neuron_table
+
+    st.markdown("# Connection Predictor")
+    st.markdown("Evaluate a specific source-target neuron pair and see the model ranking score.")
 
     # --- Input ---
+    st.markdown("### Select Neuron Pair")
     col1, col2 = st.columns(2)
     with col1:
-        source_input = st.text_input(
-            "Source neuron (presynaptic)",
-            value="720575940596125868",
-        )
+        source_id = st.text_input("Source neuron root_id", placeholder="e.g. 720575940597856265")
     with col2:
-        target_input = st.text_input(
-            "Target neuron (postsynaptic)",
-            value="720575940605825666",
-        )
+        target_id = st.text_input("Target neuron root_id", placeholder="e.g. 720575940602380768")
 
-    try:
-        source_id = int(source_input)
-        target_id = int(target_input)
-    except ValueError:
-        st.error("Please enter valid integer root IDs.")
+    if not source_id or not target_id:
+        st.info("Enter both source and target neuron IDs to evaluate.")
         return
 
-    if st.button("Score Connection", type="primary"):
-        # Validate neurons exist
-        try:
-            source_neuron = store.get_neuron(source_id)
-        except KeyError:
-            st.error(f"Source neuron {source_id} not found.")
-            return
-        try:
-            target_neuron = store.get_neuron(target_id)
-        except KeyError:
-            st.error(f"Target neuron {target_id} not found.")
-            return
+    try:
+        src = int(source_id)
+        tgt = int(target_id)
+    except ValueError:
+        st.error("Both IDs must be integers.")
+        return
 
-        # Score the pair
-        result = store._inference.score_connection(source_id, target_id)
+    src_data = store.get_neuron(src)
+    tgt_data = store.get_neuron(tgt)
+    if src_data is None:
+        st.error(f"Source neuron {src} not found.")
+        return
+    if tgt_data is None:
+        st.error(f"Target neuron {tgt} not found.")
+        return
 
-        # --- Connection Status ---
-        st.markdown("### Connection Status")
-        if result.is_self_loop:
-            st.warning("This is a self-loop (source == target).")
-        elif result.is_known_edge:
-            st.success("**Observed in evaluated dataset.**")
-            st.markdown(
-                "A connection between these neurons was observed in the "
-                "Princeton connectome dataset."
-            )
-        else:
-            st.info(
-                "**Not observed in evaluated dataset.** No connection was "
-                "observed for this pair in the evaluated dataset. This does "
-                "not mean the neurons are definitely not connected biologically."
-            )
+    # --- Source vs Target comparison ---
+    st.markdown("---")
+    st.markdown("## Source vs Target Comparison")
 
-        # --- Model Score ---
-        st.markdown("### Model Ranking Score")
-        st.metric("Score", f"{result.score:.4f}")
+    scol, tcol = st.columns(2)
 
-        st.markdown("""
-        <div class="disclaimer">
-        This score is intended for candidate ranking and should not be
-        interpreted as a literal biological probability. It represents
-        the model's assessment of relative connectivity likelihood based
-        on neuron-level properties.
-        </div>
-        """, unsafe_allow_html=True)
+    def _neuron_card(col, data, label):
+        with col:
+            st.markdown(f"**{label}**")
+            name_val = data.name if pd.notna(data.name) else "—"
+            st.markdown(f"**Root ID:** `{data.root_id}`")
+            st.markdown(f"**Name:** {name_val}")
+            st.markdown(f"**Super-class:** {data.super_class or '—'}")
+            st.markdown(f"**Primary Type:** {data.primary_type or '—'}")
 
-        # --- Source Properties ---
-        st.markdown("### Source vs Target Comparison")
+            nt = data.nt_type
+            st.markdown(f"**Neurotransmitter:** `{nt if pd.notna(nt) else 'Unknown'}`")
 
-        col1, col2 = st.columns(2)
-        with col1:
-            st.markdown("**Source**")
-            st.markdown(f"- Root ID: `{source_id}`")
-            st.markdown(f"- Super Class: {source_neuron.super_class or 'Unknown'}")
-            st.markdown(f"- Primary Type: {source_neuron.primary_type or 'Unknown'}")
-            st.markdown(f"- NT Type: {source_neuron.nt_type or 'Unknown'}")
-            st.markdown(f"- Length: {source_neuron.length_nm:,.0f} nm" if source_neuron.length_nm else "- Length: N/A")
-            st.markdown(f"- Area: {source_neuron.area_nm:,.0f} nm²" if source_neuron.area_nm else "- Area: N/A")
-            st.markdown(f"- Coords: ({source_neuron.coord_x:.0f}, {source_neuron.coord_y:.0f}, {source_neuron.coord_z:.0f})"
-                       if source_neuron.coord_x else "- Coords: N/A")
+            for key, label_m in [("length_nm", "Length"), ("area_nm", "Area"), ("size_nm", "Size")]:
+                val = getattr(data, key, None)
+                if pd.notna(val) and val > 0:
+                    st.markdown(f"**{label_m}:** {val:,.0f} nm")
+                else:
+                    st.markdown(f"**{label_m}:** —")
 
-        with col2:
-            st.markdown("**Target**")
-            st.markdown(f"- Root ID: `{target_id}`")
-            st.markdown(f"- Super Class: {target_neuron.super_class or 'Unknown'}")
-            st.markdown(f"- Primary Type: {target_neuron.primary_type or 'Unknown'}")
-            st.markdown(f"- NT Type: {target_neuron.nt_type or 'Unknown'}")
-            st.markdown(f"- Length: {target_neuron.length_nm:,.0f} nm" if target_neuron.length_nm else "- Length: N/A")
-            st.markdown(f"- Area: {target_neuron.area_nm:,.0f} nm²" if target_neuron.area_nm else "- Area: N/A")
-            st.markdown(f"- Coords: ({target_neuron.coord_x:.0f}, {target_neuron.coord_y:.0f}, {target_neuron.coord_z:.0f})"
-                       if target_neuron.coord_x else "- Coords: N/A")
+            for key, label_c in [("coord_x", "X"), ("coord_y", "Y"), ("coord_z", "Z")]:
+                val = getattr(data, key, None)
+                if pd.notna(val):
+                    st.markdown(f"**{label_c}:** {val:,.1f}")
 
-        # --- Feature Importance (global) ---
-        st.markdown("### Global Feature Importance")
-        st.markdown(
-            "Global model feature importance is shown below; this describes "
-            "overall model behavior and is not a local explanation for this pair."
-        )
+    _neuron_card(scol, src_data, "SOURCE NEURON")
+    _neuron_card(tcol, tgt_data, "TARGET NEURON")
 
-        fi = store.get_feature_importance()
-        if fi:
-            fi_df = pd.DataFrame([
-                {"Feature": f.feature, "Importance": f.importance, "Group": f.group}
-                for f in fi
-            ])
-            st.dataframe(fi_df.style.format({"Importance": "{:.4f}"}), hide_index=True)
+    # --- Connection Status ---
+    st.markdown("---")
+    st.markdown("## Connection Status")
+    is_observed = store.check_connection(src, tgt)
+    if is_observed:
+        st.success("**Observed in evaluated dataset** — This directed connection is present in the FlyWire connectivity graph used for evaluation.")
+    else:
+        st.info("**Not observed in evaluated dataset** — This directed connection is not present in the evaluated graph.")
 
-            # Bar chart
-            st.bar_chart(fi_df.set_index("Feature")["Importance"])
+    # --- Ranking Score ---
+    st.markdown("## Model Ranking Score")
+    score = store.score_connection(src, tgt)
+    st.metric("Ranking Score", f"{score:.4f}")
+
+    st.markdown("""
+    <div class="disclaimer">
+    <strong>Interpretation:</strong> This score is used for candidate ranking and should not be
+    interpreted as a literal biological probability. A higher score indicates the model ranks
+    this pair as more likely to have a directed connection based on learned statistical patterns.
+    </div>
+    """, unsafe_allow_html=True)
+
+    # --- Pair Features ---
+    st.markdown("## Pair-Level Model Features")
+    src_arr = store.get_feature_vector(src)
+    tgt_arr = store.get_feature_vector(tgt)
+    if src_arr is not None and tgt_arr is not None:
+        pair_data = {}
+        feature_names = ["length_nm", "area_nm", "size_nm", "coord_x", "coord_y", "coord_z",
+                         "nt_type_score", "ach_avg", "gaba_avg", "glut_avg", "da_avg", "ser_avg", "oct_avg",
+                         "synapse_count", "total_nt_score"]
+        for i, fname in enumerate(feature_names):
+            pair_data[fname] = {
+                "Source": f"{src_arr[i]:.4f}" if i < len(src_arr) else "—",
+                "Target": f"{tgt_arr[i]:.4f}" if i < len(tgt_arr) else "—",
+                "|Diff|": f"{abs(src_arr[i] - tgt_arr[i]):.4f}" if i < len(src_arr) and i < len(tgt_arr) else "—",
+                "Product": f"{src_arr[i] * tgt_arr[i]:.4f}" if i < len(src_arr) and i < len(tgt_arr) else "—",
+            }
+        pair_df = pd.DataFrame(pair_data).T
+        st.dataframe(pair_df, use_container_width=True)
+    else:
+        st.warning("Feature vectors not available.")
+
+    # --- Quick actions ---
+    st.markdown("---")
+    st.markdown("### Quick Actions")
+    a1, a2 = st.columns(2)
+    with a1:
+        if st.button("Rank candidates for this source", use_container_width=True):
+            st.session_state["candidate_source"] = source_id
+            st.switch_page("app/streamlit_app.py")
+    with a2:
+        if st.button("Explore source neuron in detail", use_container_width=True):
+            st.session_state["explorer_id"] = source_id
+            st.switch_page("app/streamlit_app.py")

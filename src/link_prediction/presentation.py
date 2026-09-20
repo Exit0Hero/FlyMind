@@ -473,6 +473,21 @@ class FlyMindDataStore:
             ))
         return results
 
+    def get_feature_vector(self, root_id: int):
+        """Get the 15-dimensional base feature vector for a neuron.
+
+        Args:
+            root_id: Neuron root ID.
+
+        Returns:
+            numpy array of shape (15,) or None if neuron not found.
+        """
+        self._ensure_loaded()
+        idx = self._id_to_idx.get(root_id)
+        if idx is None:
+            return None
+        return self._X_features[idx]
+
     def get_ranking_distribution(self) -> dict:
         """Get held-out positive rank distribution (Experiment 3F).
 

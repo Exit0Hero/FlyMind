@@ -1,94 +1,147 @@
 # FlyMind
 
-A machine-learning project using the FlyWire FAFB (Full Adult Fly Brain) *Drosophila melanogaster* connectome dataset.
+**Learning neuron connectivity from biological and morphological properties**
+
+FlyMind explores whether neuron-level biological and morphological properties can predict
+directed connectivity in the fruit-fly (*Drosophila melanogaster*) connectome, and whether
+those relationships generalize to previously unseen neurons.
+
+---
+
+## Research Question
+
+Can neuron-level biological and morphological properties predict directed connectivity
+in the fruit-fly connectome, and do those relationships generalize to previously unseen neurons?
+
+## Key Findings
+
+| Metric | Value |
+|--------|-------|
+| Neurons | 139,255 |
+| Directed edges | 3,732,460 |
+| Cold-start ROC-AUC | ~0.98 |
+| Cold-start PR-AUC | 0.974 |
+| Recall@10 | 0.814 |
+
+**Cold-start generalization:** Training edges touching held-out neurons are excluded.
+The model is evaluated entirely on previously unseen neurons.
+
+## Architecture
+
+```
+FlyWire Connectome (FAFB)
+            ↓
+Neuron Biological Features  +  Morphological Features
+            ↓
+     Feature Engineering (60 dimensions)
+            ↓
+      Random Forest (validated primary model)
+            ↓
+    Connection Scoring → Candidate Ranking
+            ↓
+Model-suggested candidate connections
+```
+
+## Dashboard
+
+Interactive research dashboard for exploring neuron connectivity:
+
+```bash
+streamlit run app/streamlit_app.py
+```
+
+**Pages:**
+- **Overview** — Research question, key metrics, architecture
+- **Neuron Explorer** — Search and inspect individual neurons
+- **Connection Predictor** — Evaluate specific source-target pairs
+- **Candidate Ranking** — Rank candidate target connections
+- **Research Results** — Validated experiment results
+- **About / Limitations** — Scientific context and known limitations
 
 ## Dataset
 
-This project uses connectome data from [FlyWire](https://flywire.ai/), a complete wiring diagram of the adult fruit-fly brain (*Drosophila melanogaster*), built from the FAFB (Full Adult Fly Brain) electron microscopy volume.
+FlyWire FAFB (Full Adult Fly Brain) connectome:
+- 139,255 neurons
+- 3,732,460 unique directed edges
+- 15 safe features (13 numeric + 2 categorical)
+- 76 brain regions (neuropils)
 
-**Citation:** If you use this data, please cite the FlyWire consortium and the original FAFB dataset as described at [https://flywire.ai/](https://flywire.ai/).
+**Citation:** If you use this data, please cite the FlyWire consortium and the original
+FAFB dataset as described at [https://flywire.ai/](https://flywire.ai/).
 
-### Raw Data Files
+## Experiments
 
-| File | Description |
-|------|-------------|
-| `neurons.csv.gz` | Neuron metadata with neurotransmitter type predictions |
-| `classification.csv.gz` | Hierarchical neuron classification (super_class, class, sub_class) |
-| `consolidated_cell_types.csv.gz` | Cell type labels |
-| `cell_stats.csv.gz` | Morphological measurements (length, area, size) |
-| `coordinates.csv.gz` | Neuron body coordinates |
-| `names.csv.gz` | Proofread neuron names and groups |
-| `visual_neuron_types.csv.gz` | Visual system neuron annotations |
-| `connectivity_tags.csv.gz` | Functional connectivity tags |
-| `processed_labels.csv.gz` | Community-refined labels |
-| `column_assignment.csv.gz` | Columnar brain region assignments |
-| `connections_princeton.csv.gz` | Filtered synaptic connections (5.3M edges) |
-| `connections_buhmann_no_threshold.csv.gz` | Unfiltered synaptic connections (16.8M edges) |
-| `synapse_coordinates.csv.gz` | Spatial locations of all synapses (34.1M rows) |
-| `neuropil_synapse_table.csv.gz` | Per-neuron synapse counts by neuropil region |
-| `synapse_attachment_rates.csv.gz` | Neuropil-level proofreading statistics |
+| Experiment | Description | Key Result |
+|------------|-------------|------------|
+| **2A** | Random edge link prediction | ROC-AUC ~0.98 |
+| **2B** | Candidate ranking | Recall@10 0.814 |
+| **2C** | (Aborted — memory constraints) | N/A |
+| **3** | Cold-start generalization | ROC-AUC ~0.98 on held-out neurons |
 
-### Processed Files
+## Results
 
-| File | Description |
-|------|-------------|
-| `data/processed/neuron_table.parquet` | Normalized neuron table (139,255 neurons × 41 features) |
-| `data/processed/edges_princeton.parquet` | Directed edge table from Princeton connections |
-| `data/processed/edges_buhmann.parquet` | Directed edge table from Buhmann connections |
+- **Random Forest** is the validated primary model
+- **GraphSAGE** was evaluated comparatively and performed worse in these experiments
+- **Cold-start evaluation** demonstrates generalization to previously unseen neurons
+- **Feature importance:** morphology (area, length, size) and spatial features dominate
 
-### Key Statistics
+## Limitations
 
-- **Unique neurons:** 139,255
-- **Filtered edges (Princeton):** 5,342,446 (3,732,460 unique directed)
-- **Unfiltered edges (Buhmann):** 16,847,997 (15,091,983 unique directed)
-- **Neuron identifier:** `root_id` (FlyWire-specific uint64)
-- **Brain regions (neuropils):** 76
-- **Neurotransmitter types:** ACH, GABA, GLUT, DA, SER, OCT
+- **Dataset-specific:** Results apply to this specific FlyWire dataset
+- **Not causal:** Model learns statistical associations, not causal mechanisms
+- **Unknown annotations:** 97.3% of neurons have unknown neurotransmitter annotations
+- **Requires validation:** Candidate connections require biological confirmation
+- **Not behavior:** Does not predict neural circuits or fly behavior
+
+## Running Locally
+
+```bash
+# Install dependencies
+pip install -r requirements.txt
+
+# Run dashboard
+streamlit run app/streamlit_app.py
+
+# Run tests
+python -m pytest tests/ -v --ignore=tests/test_link_prediction.py --ignore=tests/test_cold_start.py
+```
 
 ## Project Structure
 
 ```
 flymind/
-├── data/
-│   ├── raw/          # Symlink or reference to original dataset
-│   └── processed/    # Built neuron table and edge tables
+├── app/                    # Streamlit dashboard
+│   ├── streamlit_app.py    # Entry point
+│   ├── services.py         # Cached data services
+│   └── pages/              # Dashboard pages
 ├── src/
-│   ├── inspect_data.py      # Comprehensive dataset audit
-│   ├── build_neuron_table.py # Builds normalized neuron table
-│   └── build_graph.py       # Builds edge tables + graph stats + plots
-├── notebooks/
-├── models/
+│   └── link_prediction/    # Core ML pipeline
+│       ├── config.py       # Paths, constants
+│       ├── models.py       # RF training, GraphSAGE
+│       ├── features.py     # Feature engineering
+│       ├── inference.py    # Inference layer
+│       └── presentation.py # Presentation data layer
+├── models/                 # Trained models
+├── data/
+│   ├── raw/                # Original dataset
+│   └── processed/          # Processed data
 ├── results/
-│   ├── figures/      # Generated plots
-│   └── reports/      # Data audit report
-├── tests/
-│   └── test_data_integrity.py
-├── requirements.txt
-└── README.md
+│   ├── figures/            # Generated plots
+│   └── reports/            # JSON metrics
+├── docs/                   # Documentation
+│   ├── FINAL_RESEARCH_AUDIT.md
+│   ├── FINAL_RESULTS.md
+│   ├── INFERENCE_ARCHITECTURE.md
+│   ├── PRESENTATION_DATA_LAYER.md
+│   ├── DASHBOARD_ARCHITECTURE.md
+│   ├── DEMO_SCRIPT.md
+│   └── JUDGE_QA.md
+└── tests/                  # Test suite
 ```
 
-## Setup
+## Scientific Disclaimer
 
-```bash
-pip install -r requirements.txt
-```
-
-## Usage
-
-```bash
-# Run full dataset audit
-python src/inspect_data.py
-
-# Build normalized neuron table
-python src/build_neuron_table.py
-
-# Build edge tables and generate plots
-python src/build_graph.py
-
-# Run data integrity tests
-python -m tests.test_data_integrity
-```
-
-## License
-
-See metadata files in the downloaded dataset for licensing information.
+Candidate rankings represent **model-suggested connection hypotheses**, not confirmed
+biological discoveries. A high ranking score indicates statistical association in the
+evaluated model, not proof that a biological connection exists. Biological validation
+requires wet-lab experiments.

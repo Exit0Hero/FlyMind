@@ -1,82 +1,138 @@
-"""FlyMind Dashboard — About / Limitations Page."""
+"""About / Limitations page — scientific context and known limitations."""
 
 import streamlit as st
 
 
 def render():
-    st.title("About / Limitations")
-    st.markdown("Transparent description of the FlyMind project, its methods, and limitations.")
+    st.markdown("# About / Limitations")
 
-    # --- Dataset ---
-    st.markdown("### Dataset Limitations")
     st.markdown("""
-    - **FlyWire FAFB** connectome: 139,255 neurons, 3.73M directed edges
-    - **Incomplete annotations**: ~19,000 neurons lack neurotransmitter labels
-    - **Dataset-specific**: Results apply to the evaluated Princeton connectome source
-    - **Structural only**: No behavioral or functional data included
+    FlyMind is a research tool for exploring neuron connectivity relationships in the
+    Drosophila melanogaster connectome. This page describes what the system does and does not claim.
     """)
 
-    # --- Model ---
-    st.markdown("### Model Limitations")
+    st.markdown("---")
+
+    # What FlyMind does NOT claim
+    st.markdown("## What FlyMind Does NOT Claim")
     st.markdown("""
-    - **Random Forest** is the primary validated link-ranking model (100 estimators, 60 pair features)
-    - **GNN experiments** were comparative and did not outperform RF on cold-start evaluation
-    - **Ranking scores** represent relative likelihood, not biological probability
-    - **Predictions do not establish biological truth** — they are hypotheses for further investigation
-    - **Candidate generation** uses random sampling, not exhaustive evaluation of all pairs
+    <div class="disclaimer">
+    <ul>
+    <li>Prove an unobserved connection exists</li>
+    <li>Discover biological truth automatically</li>
+    <li>Predict fly behavior</li>
+    <li>Establish neurotransmitter causality</li>
+    <li>Reconstruct the entire connectome</li>
+    <li>Provide literal biological probabilities</li>
+    </ul>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # What FlyMind DOES
+    st.markdown("## What FlyMind DOES")
+    st.markdown("""
+    <div class="disclaimer-info">
+    <ul>
+    <li>Learn statistical relationships from the evaluated connectome</li>
+    <li>Test generalization to held-out neurons</li>
+    <li>Rank candidate connection hypotheses</li>
+    <li>Provide an interactive research interface</li>
+    </ul>
+    </div>
+    """, unsafe_allow_html=True)
+
+    st.markdown("---")
+
+    # Limitations
+    st.markdown("## Known Limitations")
+
+    with st.expander("Dataset", expanded=True):
+        st.markdown("""
+        - 139,255 neurons from FlyWire FAFB connectome
+        - 3,732,460 unique directed edges
+        - Dataset-specific coverage and filtering
+        - **97.3% of neurons have unknown neurotransmitter annotations**
+        - Annotation quality varies across brain regions
+        """)
+
+    with st.expander("Model", expanded=True):
+        st.markdown("""
+        - Random Forest is the validated primary model (100 estimators, 60 features)
+        - GraphSAGE was evaluated comparatively and performed worse in these experiments
+        - Model captures statistical correlations, not causal mechanisms
+        - 15 base features + pair engineering (source, target, difference, product) = 60 dimensions
+        """)
+
+    with st.expander("Generalization", expanded=True):
+        st.markdown("""
+        - Cold-start evaluation provides evidence for generalization within the evaluated setup
+        - Training edges touching held-out neurons are excluded
+        - **Does not imply universal biological generalization**
+        - Generalization is specific to this dataset, feature set, and evaluation protocol
+        """)
+
+    with st.expander("Biology", expanded=True):
+        st.markdown("""
+        - Model associations are not causal biological mechanisms
+        - Neurotransmitter annotations are predicted, not measured for most neurons
+        - Spatial proximity may confound connectivity predictions
+        - Biological validation requires wet-lab experiments
+        """)
+
+    with st.expander("Candidate Interpretation", expanded=True):
+        st.markdown("""
+        - Candidate rankings are hypotheses for investigation
+        - A high ranking score does not prove a biological connection exists
+        - Ranking scores should not be interpreted as literal biological probabilities
+        - Biological validation requires experimental confirmation
+        """)
+
+    with st.expander("Experiment 2C", expanded=True):
+        st.markdown("""
+        - Experiment 2C was aborted due to memory constraints (RAM exhaustion)
+        - Not treated as a scientific result
+        - No partial or incomplete result from Experiment 2C is presented
+        """)
+
+    st.markdown("---")
+
+    # How it works (non-ML explanation)
+    st.markdown("## How It Works (Non-Technical)")
+    st.markdown("""
+    1. **Represent** each neuron using biological and morphological features
+    2. **Construct** source-target feature pairs
+    3. **Train** a validated Random Forest on observed connectivity
+    4. **Evaluate** on held-out neurons (cold-start)
+    5. **Rank** candidate target neurons
+    6. **Present** high-ranking pairs as hypotheses for further investigation
     """)
 
-    # --- Evaluation ---
-    st.markdown("### Evaluation Limitations")
+    # Terminology guide
+    st.markdown("## Terminology Guide")
     st.markdown("""
-    - **Random-edge evaluation** (Experiment 2A) can be optimistic because nodes remain visible through other edges
-    - **Cold-start evaluation** (Experiment 2B) tests a stricter generalization scenario where test nodes have zero training connectivity
-    - **Experiment 2C** (neural network ablation) was aborted due to memory constraints and must NOT be represented as a scientific result
-    - **Candidate sampling** means not all possible pairs are evaluated
+    | Term | Meaning |
+    |------|---------|
+    | **Root ID** | Unique FlyWire neuron identifier |
+    | **Super-class** | High-level biological classification (e.g., motor, sensory, central) |
+    | **Primary Type** | Specific neuron type label |
+    | **Ranking Score** | Model-derived score for candidate ordering |
+    | **Cold-start** | Evaluation on previously unseen neurons |
+    | **Observed connection** | Directed edge present in the evaluated graph |
+    | **Candidate connection** | Model-suggested pair not present in the evaluated graph |
+    | **Pair features** | Features constructed from source + target neuron properties |
+    | **ECE** | Expected Calibration Error — measures probability calibration |
+    | **Recall@K** | Fraction of true connections in top-K ranked candidates |
     """)
 
-    # --- Biological ---
-    st.markdown("### Biological Limitations")
+    st.markdown("---")
+
+    # Dataset citation
+    st.markdown("## Dataset Citation")
     st.markdown("""
-    - **Unknown neurotransmitter annotations** are common (~97.3% of top candidates)
-    - **Model associations are not causal mechanisms** — the model learns statistical patterns, not biological rules
-    - **Unobserved does not mean biologically absent** — the connectome dataset is incomplete
-    - **No behavioral prediction** — the model does not predict fly behavior
-    """)
+    This project uses connectome data from [FlyWire](https://flywire.ai/), a complete wiring
+    diagram of the adult fruit-fly brain (Drosophila melanogaster), built from the FAFB
+    (Full Adult Fly Brain) electron microscopy volume.
 
-    # --- Terminology ---
-    st.markdown("### Scientific Terminology")
-    st.markdown("""
-    **Preferred terms:**
-    - model-suggested candidate connection
-    - candidate connection hypothesis
-    - ranking score
-    - observed in evaluated dataset
-    - not observed in evaluated dataset
-    - generalizes to previously unseen neurons
-
-    **Avoided terms:**
-    - discovered connection
-    - confirmed new connection
-    - guaranteed connection
-    - biological probability
-    - proves / understands the brain
-    - predicts fly behavior
-    """)
-
-    # --- How to Run ---
-    st.markdown("### How to Run Locally")
-    st.code("""
-# From the flymind repository root:
-pip install -r requirements.txt
-streamlit run app/streamlit_app.py
-    """)
-
-    # --- Credits ---
-    st.markdown("### Credits")
-    st.markdown("""
-    - **Dataset**: FlyWire consortium (FAFB connectome)
-    - **ML**: scikit-learn (Random Forest), PyTorch Geometric (GraphSAGE)
-    - **Dashboard**: Streamlit
-    - **Research**: FlyMind project
+    **Citation:** If you use this data, please cite the FlyWire consortium and the original
+    FAFB dataset as described at [https://flywire.ai/](https://flywire.ai/).
     """)

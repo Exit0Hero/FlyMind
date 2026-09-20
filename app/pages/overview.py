@@ -1,81 +1,101 @@
-"""FlyMind Dashboard — Overview Page."""
+"""Overview page — project summary and key metrics."""
 
 import streamlit as st
-from app.services import get_store
 
 
 def render():
-    st.title("FlyMind")
-    st.subheader("Learning neuron connectivity from biological and morphological properties")
-
     st.markdown("""
-    ### Research Question
-    > Can neuron-level biological and morphological properties predict
-    > directed connectivity in the fruit-fly connectome, and do those
-    > relationships generalize to previously unseen neurons?
+    # FlyMind
+
+    **Learning neuron connectivity from biological and morphological properties**
+
+    *Fruit-fly (Drosophila melanogaster) connectome research*
     """)
 
-    store = get_store()
-
-    # --- Key dataset statistics ---
-    st.markdown("### Dataset")
-    col1, col2, col3, col4 = st.columns(4)
-    col1.metric("Neurons", f"{store.n_neurons:,}")
-    col2.metric("Directed Edges", f"{store.n_edges:,}")
-    col3.metric("Node Features", "15")
-    col4.metric("Pair Features", "60")
-
-    # --- Architecture ---
+    # Research question
     st.markdown("""
-    ### Architecture
+    <div class="disclaimer-info">
+    <strong>Research Question:</strong> Can neuron-level biological and morphological properties
+    predict directed connectivity in the fruit-fly connectome, and do those relationships
+    generalize to previously unseen neurons?
+    </div>
+    """, unsafe_allow_html=True)
+
+    # Quick action buttons
+    c1, c2, c3 = st.columns(3)
+    with c1:
+        st.page_link("app/streamlit_app.py", label="Explore a Neuron", icon="🔍")
+    with c2:
+        st.page_link("app/streamlit_app.py", label="Rank Candidate Connections", icon="📊")
+    with c3:
+        st.page_link("app/streamlit_app.py", label="View Research Results", icon="📋")
+
+    st.markdown('<div class="section-divider"></div>', unsafe_allow_html=True)
+
+    # Key metrics
+    st.markdown("## Key Metrics")
+    m1, m2, m3, m4, m5 = st.columns(5)
+    m1.metric("Neurons", "139,255")
+    m2.metric("Directed Edges", "3.73M")
+    m3.metric("Cold-start ROC-AUC", "~0.98")
+    m4.metric("Cold-start PR-AUC", "0.974")
+    m5.metric("Recall@10", "0.814")
+
+    st.markdown('<div class="section-divider"></div>', unsafe_allow_html=True)
+
+    # Architecture
+    st.markdown("## Research Architecture")
+    st.markdown("""
     ```
-    Neuron properties (morphology, spatial, neurotransmitter)
-              |
-    Feature engineering (pair features: [x_A, x_B, |x_A-x_B|, x_A*x_B])
-              |
-    Validated Random Forest model (100 estimators)
-              |
-    Connection scoring (ranking score 0-1)
-              |
-    Candidate ranking (model-suggested hypotheses)
+    FlyWire Connectome (FAFB)
+                ↓
+    Neuron Biological Features    +    Morphological Features
+                ↓
+         Feature Engineering
+      (source, target, pair features)
+                ↓
+          Random Forest
+        (validated primary model)
+                ↓
+        Connection Scoring
+                ↓
+       Candidate Ranking
+                ↓
+    Model-suggested candidate connections
     ```
     """)
 
-    # --- Key Results ---
-    st.markdown("### Key Research Results")
+    st.markdown('<div class="section-divider"></div>', unsafe_allow_html=True)
 
-    st.markdown("#### Cold-Start Evaluation (strongest validation)")
-    st.markdown(
-        "Test neurons have **zero training connectivity information**. "
-        "This tests whether node-level features generalize to unseen neurons."
-    )
-
-    comparison = store.get_model_comparison()
-    if comparison:
-        import pandas as pd
-        df = pd.DataFrame(comparison)
-        df = df[["model", "roc_auc", "pr_auc"]].rename(columns={
-            "model": "Model",
-            "roc_auc": "ROC-AUC",
-            "pr_auc": "PR-AUC",
-        })
-        st.dataframe(df.style.format({"ROC-AUC": "{:.4f}", "PR-AUC": "{:.4f}"}), hide_index=True)
-
-    # --- Primary result highlight ---
+    # What can I interact with
+    st.markdown("## What Can I Interact With?")
     st.markdown("""
-    ### Primary Result
-    > **RF Node Features (cold-start): ROC-AUC = 0.980**
-    >
-    > Neuron-level features (morphology, spatial coordinates, neurotransmitter expression)
-    > are sufficient to predict directed connections with high accuracy, and this
-    > generalizes to previously unseen neurons.
+    | Page | What it does |
+    |------|-------------|
+    | **Neuron Explorer** | Search any neuron by ID; view morphology, location, neurotransmitter profile, connectivity summary, and local neighborhood |
+    | **Connection Predictor** | Evaluate a specific source–target pair; see model ranking score and feature comparison |
+    | **Candidate Ranking** | Rank all candidate target neurons for a source; inspect top candidates with side-by-side comparison |
+    | **Research Results** | View validated experiment results: link prediction, cold-start generalization, calibration, feature importance |
     """)
 
-    # --- Disclaimer ---
+    st.markdown('<div class="section-divider"></div>', unsafe_allow_html=True)
+
+    # How it works
+    st.markdown("## How It Works")
+    st.markdown("""
+    1. Represent each neuron using biological and morphological features (15 base features)
+    2. Construct source-target feature pairs (pair, difference, interaction — 60 dimensions)
+    3. Train a validated Random Forest on observed connectivity
+    4. Evaluate on held-out neurons (cold-start evaluation)
+    5. Rank candidate target neurons for any source neuron
+    6. Present high-ranking pairs as hypotheses for further investigation
+    """)
+
+    # Disclaimer
     st.markdown("""
     <div class="disclaimer">
-    <strong>Scientific Disclaimer:</strong> Candidate rankings represent model-suggested
-    connection hypotheses. They do not establish that an unobserved biological connection
-    exists. The model is a computational ranking system, not a biological probability estimator.
+    <strong>Important:</strong> Candidate rankings represent model-suggested connection hypotheses,
+    not confirmed biological discoveries. A high ranking score indicates statistical association
+    in the evaluated model, not proof that a biological connection exists.
     </div>
     """, unsafe_allow_html=True)
