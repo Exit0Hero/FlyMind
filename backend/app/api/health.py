@@ -1,0 +1,29 @@
+"""Health check endpoint."""
+
+from fastapi import APIRouter
+
+from app.core.config import settings
+from app.schemas.models import HealthResponse
+from app.services.ml_service import ml_service
+
+router = APIRouter()
+
+
+@router.get("/health", response_model=HealthResponse)
+def health_check() -> HealthResponse:
+    n_neurons = None
+    n_edges = None
+    if ml_service.is_loaded:
+        try:
+            n_neurons = ml_service.n_neurons
+            n_edges = ml_service.n_edges
+        except Exception:
+            pass
+
+    return HealthResponse(
+        status="ok" if ml_service.is_loaded else "degraded",
+        model_loaded=ml_service.is_loaded,
+        n_neurons=n_neurons,
+        n_edges=n_edges,
+        version=settings.APP_VERSION,
+    )
