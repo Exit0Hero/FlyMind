@@ -90,11 +90,17 @@ def render():
     st.markdown(render_section_label("QUICK ACTIONS"), unsafe_allow_html=True)
     c1, c2, c3 = st.columns(3)
     with c1:
-        st.page_link("app/streamlit_app.py", label="🔍 Explore a Neuron", icon=None)
+        if st.button("🔍 Explore a Neuron", use_container_width=True):
+            st.session_state["nav"] = "Neuron Explorer"
+            st.rerun()
     with c2:
-        st.page_link("app/streamlit_app.py", label="🎯 Predict a Connection", icon=None)
+        if st.button("🎯 Predict a Connection", use_container_width=True):
+            st.session_state["nav"] = "Connection Predictor"
+            st.rerun()
     with c3:
-        st.page_link("app/streamlit_app.py", label="🏆 View Top Candidates", icon=None)
+        if st.button("🏆 View Top Candidates", use_container_width=True):
+            st.session_state["nav"] = "Candidate Ranking"
+            st.rerun()
 
     st.markdown('<div style="height:24px"></div>', unsafe_allow_html=True)
 
