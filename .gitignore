@@ -1,6 +1,17 @@
 # Data
 data/raw/
 data/processed/*.csv
+data/processed/*.parquet
+data/processed/*.npy
+data/processed/link_prediction/
+data/processed/edges_*.parquet
+
+# Models (large artifacts)
+models/*.pkl
+models/*.pt
+models/*.pth
+!models/link_prediction_rf.metadata.json
+!models/preprocessor_config.json
 
 # Python
 __pycache__/
