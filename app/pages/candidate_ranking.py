@@ -3,25 +3,34 @@
 import streamlit as st
 import pandas as pd
 from app.services import get_store
-
+from app.theme import inject_css, render_section_label, render_badge, render_score_bar, render_disclaimer, render_monospace
 
 def render(demo_id=None):
+    inject_css()
     store = get_store()
     df = store.neuron_table
 
     st.markdown("# Candidate Ranking")
-    st.markdown("Rank candidate target neurons for a given source neuron based on model scoring.")
+    st.markdown('<p style="color:#A6ADBB; font-size:14px">Rank candidate target neurons for a given source neuron based on model scoring.</p>', unsafe_allow_html=True)
 
-    # --- Source Selection ---
-    st.markdown("### Select Source Neuron")
+    st.markdown("---")
+
+    # Source Selection
+    st.markdown(render_section_label("SOURCE NEURON"), unsafe_allow_html=True)
     source_id = st.text_input(
         "Source neuron root_id",
         value=str(demo_id) if demo_id else "",
         placeholder="e.g. 720575940597856265",
+        label_visibility="collapsed",
     )
 
     if not source_id:
-        st.info("Enter a source neuron ID to rank candidate targets.")
+        st.markdown("""
+        <div style="text-align:center; padding:60px 0; color:#6B7180">
+            <div style="font-size:48px; margin-bottom:16px">🏆</div>
+            <div style="font-size:16px">Enter a source neuron ID to rank candidate targets</div>
+        </div>
+        """, unsafe_allow_html=True)
         return
 
     try:
@@ -35,17 +44,14 @@ def render(demo_id=None):
         st.error(f"Neuron {src} not found.")
         return
 
-    # Show source info
-    st.markdown(f"**Source:** `{src}` — {src_data.primary_type or '—'} ({src_data.super_class or '—'})")
-
-    # --- Ranking Parameters ---
+    # Controls
     col1, col2 = st.columns(2)
     with col1:
         k = st.slider("Number of candidates (K)", 5, 100, 20)
     with col2:
         exclude_observed = st.checkbox("Exclude observed connections", value=True)
 
-    # --- Rank Candidates ---
+    # Rank candidates
     with st.spinner("Ranking candidates..."):
         results = store.rank_candidate_targets(src, k=k, exclude_observed=exclude_observed)
 
@@ -53,127 +59,72 @@ def render(demo_id=None):
         st.warning("No candidates found.")
         return
 
-    # Convert dataclass objects to dicts for DataFrame
-    results_dicts = [{
-        "rank": r.rank,
-        "source": str(r.source_root_id),
-        "target": str(r.target_root_id),
-        "ranking_score": r.score,
-        "target_primary_type": r.target_primary_type or "—",
-        "target_super_class": r.target_super_class or "—",
-        "target_nt_type": r.target_nt_type or "—",
-    } for r in results]
-    results_df = pd.DataFrame(results_dicts)
-
-    st.markdown("---")
-    st.markdown(f"## Top {len(results_df)} Candidate Connections")
-
-    # Summary metrics
-    if len(results_df) > 0:
-        mc1, mc2, mc3 = st.columns(3)
-        mc1.metric("Top Score", f"{results_df['ranking_score'].iloc[0]:.4f}")
-        mc2.metric("Median Score", f"{results_df['ranking_score'].median():.4f}")
-        mc3.metric("Score Range", f"{results_df['ranking_score'].min():.4f} – {results_df['ranking_score'].max():.4f}")
-
-    st.markdown("""
-    <div class="disclaimer">
-    <strong>Interpretation:</strong> These are model-suggested candidate connections, not confirmed
-    biological discoveries. Ranking scores are used for ordering candidates and should not be
-    interpreted as literal biological probabilities.
+    # Source info
+    st.markdown(f"""
+    <div class="flymind-card" style="margin-bottom:16px">
+        <div style="display:flex; align-items:center; gap:12px">
+            <div>
+                <div style="font-size:11px; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; color:#6B7180; margin-bottom:4px">
+                    SOURCE
+                </div>
+                <div style="font-family:'JetBrains Mono',monospace; font-size:14px; color:#4FD1C5">
+                    {src}
+                </div>
+            </div>
+            <div style="font-size:14px; color:#A6ADBB">
+                {src_data.primary_type or '—'} ({src_data.super_class or '—'})
+            </div>
+            <div style="margin-left:auto">
+                {render_badge(src_data.nt_type or 'Unknown', 'teal' if src_data.nt_type else 'muted')}
+            </div>
+        </div>
     </div>
     """, unsafe_allow_html=True)
 
-    # Candidate table
-    display_df = results_df[["rank", "target", "target_primary_type", "target_super_class", "ranking_score"]].copy()
-    display_df.columns = ["Rank", "Target ID", "Type", "Super-class", "Score"]
-    st.dataframe(display_df, use_container_width=True, height=min(400, 40 + len(display_df) * 35))
+    # Disclaimer
+    st.markdown(render_disclaimer(), unsafe_allow_html=True)
 
-    # --- Score Distribution ---
-    st.markdown("## Score Distribution")
-    st.bar_chart(results_df.set_index("rank")["ranking_score"])
-
-    # --- Candidate Detail ---
     st.markdown("---")
-    st.markdown("## Candidate Detail")
-    candidate_options = [f"{r.rank}. {r.target_root_id} — {r.target_primary_type or '?'} (score: {r.score:.4f})" for r in results]
-    selected = st.selectbox("Select a candidate to inspect", candidate_options)
 
-    if selected:
-        idx = int(selected.split(".")[0]) - 1
-        cand = results[idx]
-        tgt_id = cand.target_root_id
-        tgt_data = store.get_neuron(tgt_id)
+    # Results
+    st.markdown(render_section_label(f"TOP {len(results)} CANDIDATE CONNECTIONS"), unsafe_allow_html=True)
 
-        st.markdown("---")
-        st.markdown("## Source vs Target Comparison")
+    # Summary metrics
+    if results:
+        scores = [r.score for r in results]
+        mc1, mc2, mc3 = st.columns(3)
+        mc1.metric("Top Score", f"{max(scores):.4f}")
+        mc2.metric("Median Score", f"{scores[len(scores)//2]:.4f}")
+        mc3.metric("Score Range", f"{min(scores):.4f} – {max(scores):.4f}")
 
-        scol, tcol = st.columns(2)
+    # Candidate table with score bars
+    for r in results:
+        tgt_data = store.get_neuron(r.target_root_id)
+        is_observed = store.check_connection(src, r.target_root_id)
 
-        def _card(col, data, label):
-            with col:
-                st.markdown(f"**{label}**")
-                name_val = data.name if pd.notna(data.name) else "—"
-                st.markdown(f"**Root ID:** `{data.root_id}`")
-                st.markdown(f"**Name:** {name_val}")
-                st.markdown(f"**Super-class:** {data.super_class or '—'}")
-                st.markdown(f"**Primary Type:** {data.primary_type or '—'}")
-                nt = data.nt_type
-                st.markdown(f"**Neurotransmitter:** `{nt if pd.notna(nt) else 'Unknown'}`")
-                for key, label_m in [("length_nm", "Length"), ("area_nm", "Area"), ("size_nm", "Size")]:
-                    val = getattr(data, key, None)
-                    if pd.notna(val) and val > 0:
-                        st.markdown(f"**{label_m}:** {val:,.0f} nm")
-                    else:
-                        st.markdown(f"**{label_m}:** —")
-                for key, label_c in [("coord_x", "X"), ("coord_y", "Y"), ("coord_z", "Z")]:
-                    val = getattr(data, key, None)
-                    if pd.notna(val):
-                        st.markdown(f"**{label_c}:** {val:,.1f}")
-
-        _card(scol, src_data, "SOURCE NEURON")
-        if tgt_data is not None:
-            _card(tcol, tgt_data, "TARGET NEURON")
-        else:
-            with tcol:
-                st.error("Target neuron data not found.")
-
-        # Connection status
-        is_obs = store.check_connection(src, tgt_id)
-        if is_obs:
-            st.success("**Observed in evaluated dataset**")
-        else:
-            st.info("**Not observed in evaluated dataset**")
-
-        st.metric("Ranking Score", f"{cand.score:.4f}")
-
-        # Pair features
-        src_arr = store.get_feature_vector(src)
-        tgt_arr = store.get_feature_vector(tgt_id)
-        if src_arr is not None and tgt_arr is not None:
-            feature_names = ["length_nm", "area_nm", "size_nm", "coord_x", "coord_y", "coord_z",
-                             "nt_type_score", "ach_avg", "gaba_avg", "glut_avg", "da_avg", "ser_avg", "oct_avg",
-                             "synapse_count", "total_nt_score"]
-            pair_data = {}
-            for i, fname in enumerate(feature_names):
-                if i < len(src_arr) and i < len(tgt_arr):
-                    pair_data[fname] = {
-                        "Source": f"{src_arr[i]:.4f}",
-                        "Target": f"{tgt_arr[i]:.4f}",
-                        "|Diff|": f"{abs(src_arr[i] - tgt_arr[i]):.4f}",
-                        "Product": f"{src_arr[i] * tgt_arr[i]:.4f}",
-                    }
-            st.markdown("### Pair-Level Features")
-            st.dataframe(pd.DataFrame(pair_data).T, use_container_width=True)
-
-        # Quick actions
-        st.markdown("---")
-        a1, a2 = st.columns(2)
-        with a1:
-            if st.button("Explore this target neuron", use_container_width=True):
-                st.session_state["explorer_id"] = str(tgt_id)
-                st.switch_page("app/streamlit_app.py")
-        with a2:
-            if st.button("Predict connection for this pair", use_container_width=True):
-                st.session_state["predictor_source"] = source_id
-                st.session_state["predictor_target"] = str(tgt_id)
-                st.switch_page("app/streamlit_app.py")
+        st.markdown(f"""
+        <div class="flymind-card" style="margin-bottom:8px; padding:16px">
+            <div style="display:flex; align-items:center; gap:16px">
+                <div style="min-width:40px; text-align:center">
+                    <div style="font-size:11px; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; color:#6B7180">RANK</div>
+                    <div style="font-family:'Inter Tight',sans-serif; font-weight:700; font-size:24px; color:#EDEFF4">{r.rank}</div>
+                </div>
+                <div style="flex:1">
+                    <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px">
+                        <span style="font-family:'JetBrains Mono',monospace; font-size:13px; color:#8B7CF6">{r.target_root_id}</span>
+                        {render_badge('PREDICTED', 'violet')}
+                        {render_badge('OBSERVED', 'success') if is_observed else ''}
+                    </div>
+                    <div style="font-size:13px; color:#A6ADBB">
+                        {tgt_data.primary_type or '—'} · {tgt_data.super_class or '—'} · {tgt_data.nt_type or 'Unknown NT'}
+                    </div>
+                </div>
+                <div style="min-width:200px">
+                    <div style="font-family:'Inter Tight',sans-serif; font-weight:700; font-size:20px; color:#8B7CF6; text-align:right; margin-bottom:4px">
+                        {r.score:.4f}
+                    </div>
+                    {render_score_bar(r.score, 'predicted')}
+                </div>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)

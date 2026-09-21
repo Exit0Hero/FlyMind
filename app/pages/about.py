@@ -1,50 +1,85 @@
-"""About / Limitations page — scientific context and known limitations."""
+"""About / Methodology page — scientific context and known limitations."""
 
 import streamlit as st
-
+from app.theme import inject_css, render_section_label, render_badge, render_disclaimer
 
 def render():
-    st.markdown("# About / Limitations")
+    inject_css()
 
-    st.markdown("""
-    FlyMind is a research tool for exploring neuron connectivity relationships in the
-    Drosophila melanogaster connectome. This page describes what the system does and does not claim.
-    """)
+    st.markdown("# About / Methodology")
+    st.markdown('<p style="color:#A6ADBB; font-size:14px">Scientific context, methodology, and known limitations of FlyMind.</p>', unsafe_allow_html=True)
 
     st.markdown("---")
 
-    # What FlyMind does NOT claim
-    st.markdown("## What FlyMind Does NOT Claim")
+    # Research question
+    st.markdown(render_section_label("RESEARCH QUESTION"), unsafe_allow_html=True)
     st.markdown("""
-    <div class="disclaimer">
-    <ul>
-    <li>Prove an unobserved connection exists</li>
-    <li>Discover biological truth automatically</li>
-    <li>Predict fly behavior</li>
-    <li>Establish neurotransmitter causality</li>
-    <li>Reconstruct the entire connectome</li>
-    <li>Provide literal biological probabilities</li>
-    </ul>
+    <div class="flymind-card">
+        <p style="font-size:16px; color:#EDEFF4; line-height:1.6; margin:0">
+            Can neuron-level biological and morphological properties predict directed
+            connectivity in the fruit-fly connectome, and do those relationships
+            generalize to previously unseen neurons?
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
+
+    st.markdown('<div style="height:24px"></div>', unsafe_allow_html=True)
+
+    # What FlyMind does NOT claim
+    st.markdown(render_section_label("WHAT FLYMIND DOES NOT CLAIM"), unsafe_allow_html=True)
+    st.markdown("""
+    <div class="flymind-card" style="border-color:rgba(229,83,75,0.3)">
+        <ul style="color:#A6ADBB; line-height:2; margin:0; padding-left:20px">
+            <li>Prove an unobserved connection exists</li>
+            <li>Discover biological truth automatically</li>
+            <li>Predict fly behavior</li>
+            <li>Establish neurotransmitter causality</li>
+            <li>Reconstruct the entire connectome</li>
+            <li>Provide literal biological probabilities</li>
+        </ul>
     </div>
     """, unsafe_allow_html=True)
 
     # What FlyMind DOES
-    st.markdown("## What FlyMind DOES")
+    st.markdown(render_section_label("WHAT FLYMIND DOES"), unsafe_allow_html=True)
     st.markdown("""
-    <div class="disclaimer-info">
-    <ul>
-    <li>Learn statistical relationships from the evaluated connectome</li>
-    <li>Test generalization to held-out neurons</li>
-    <li>Rank candidate connection hypotheses</li>
-    <li>Provide an interactive research interface</li>
-    </ul>
+    <div class="flymind-card" style="border-color:rgba(79,209,197,0.3)">
+        <ul style="color:#A6ADBB; line-height:2; margin:0; padding-left:20px">
+            <li>Learn statistical relationships from the evaluated connectome</li>
+            <li>Test generalization to held-out neurons</li>
+            <li>Rank candidate connection hypotheses</li>
+            <li>Provide an interactive research interface</li>
+        </ul>
     </div>
     """, unsafe_allow_html=True)
 
-    st.markdown("---")
+    st.markdown('<div style="height:24px"></div>', unsafe_allow_html=True)
+
+    # How It Works
+    st.markdown(render_section_label("HOW IT WORKS"), unsafe_allow_html=True)
+    steps = [
+        ("1", "Represent", "each neuron using biological and morphological features (15 base features)"),
+        ("2", "Construct", "source-target feature pairs (pair, difference, interaction — 60 dimensions)"),
+        ("3", "Train", "a validated Random Forest on observed connectivity"),
+        ("4", "Evaluate", "on held-out neurons (cold-start evaluation)"),
+        ("5", "Rank", "candidate target neurons for any source neuron"),
+        ("6", "Present", "high-ranking pairs as hypotheses for further investigation"),
+    ]
+    for num, verb, desc in steps:
+        st.markdown(f"""
+        <div style="display:flex; gap:16px; align-items:flex-start; margin-bottom:12px">
+            <div style="min-width:32px; height:32px; border-radius:50%; background:rgba(79,209,197,0.15); display:flex; align-items:center; justify-content:center; font-family:'Inter Tight',sans-serif; font-weight:700; font-size:14px; color:#4FD1C5">{num}</div>
+            <div>
+                <span style="font-weight:600; color:#EDEFF4">{verb}</span>
+                <span style="color:#A6ADBB"> {desc}</span>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    st.markdown('<div style="height:24px"></div>', unsafe_allow_html=True)
 
     # Limitations
-    st.markdown("## Known Limitations")
+    st.markdown(render_section_label("KNOWN LIMITATIONS"), unsafe_allow_html=True)
 
     with st.expander("Dataset", expanded=True):
         st.markdown("""
@@ -58,9 +93,9 @@ def render():
     with st.expander("Model", expanded=True):
         st.markdown("""
         - Random Forest is the validated primary model (100 estimators, 60 features)
-        - GraphSAGE was evaluated comparatively and performed worse in these experiments
+        - GraphSAGE was evaluated comparatively and performed worse
         - Model captures statistical correlations, not causal mechanisms
-        - 15 base features + pair engineering (source, target, difference, product) = 60 dimensions
+        - 15 base features + pair engineering = 60 dimensions
         """)
 
     with st.expander("Generalization", expanded=True):
@@ -87,52 +122,41 @@ def render():
         - Biological validation requires experimental confirmation
         """)
 
-    with st.expander("Experiment 2C", expanded=True):
-        st.markdown("""
-        - Experiment 2C was aborted due to memory constraints (RAM exhaustion)
-        - Not treated as a scientific result
-        - No partial or incomplete result from Experiment 2C is presented
-        """)
+    st.markdown('<div style="height:24px"></div>', unsafe_allow_html=True)
 
-    st.markdown("---")
+    # Terminology
+    st.markdown(render_section_label("TERMINOLOGY GUIDE"), unsafe_allow_html=True)
+    terms = [
+        ("Root ID", "Unique FlyWire neuron identifier"),
+        ("Super-class", "High-level biological classification (e.g., motor, sensory, central)"),
+        ("Primary Type", "Specific neuron type label"),
+        ("Ranking Score", "Model-derived score for candidate ordering"),
+        ("Cold-start", "Evaluation on previously unseen neurons"),
+        ("Observed connection", "Directed edge present in the evaluated graph"),
+        ("Candidate connection", "Model-suggested pair not present in the evaluated graph"),
+        ("Pair features", "Features constructed from source + target neuron properties"),
+        ("ECE", "Expected Calibration Error — measures probability calibration"),
+        ("Recall@K", "Fraction of true connections in top-K ranked candidates"),
+    ]
+    for term, definition in terms:
+        st.markdown(f"""
+        <div style="display:flex; gap:16px; padding:8px 0; border-bottom:1px solid #232A38">
+            <span style="min-width:160px; font-weight:600; color:#EDEFF4; font-size:13px">{term}</span>
+            <span style="color:#A6ADBB; font-size:13px">{definition}</span>
+        </div>
+        """, unsafe_allow_html=True)
 
-    # How it works (non-ML explanation)
-    st.markdown("## How It Works (Non-Technical)")
+    st.markdown('<div style="height:24px"></div>', unsafe_allow_html=True)
+
+    # Citation
+    st.markdown(render_section_label("DATASET CITATION"), unsafe_allow_html=True)
     st.markdown("""
-    1. **Represent** each neuron using biological and morphological features
-    2. **Construct** source-target feature pairs
-    3. **Train** a validated Random Forest on observed connectivity
-    4. **Evaluate** on held-out neurons (cold-start)
-    5. **Rank** candidate target neurons
-    6. **Present** high-ranking pairs as hypotheses for further investigation
-    """)
-
-    # Terminology guide
-    st.markdown("## Terminology Guide")
-    st.markdown("""
-    | Term | Meaning |
-    |------|---------|
-    | **Root ID** | Unique FlyWire neuron identifier |
-    | **Super-class** | High-level biological classification (e.g., motor, sensory, central) |
-    | **Primary Type** | Specific neuron type label |
-    | **Ranking Score** | Model-derived score for candidate ordering |
-    | **Cold-start** | Evaluation on previously unseen neurons |
-    | **Observed connection** | Directed edge present in the evaluated graph |
-    | **Candidate connection** | Model-suggested pair not present in the evaluated graph |
-    | **Pair features** | Features constructed from source + target neuron properties |
-    | **ECE** | Expected Calibration Error — measures probability calibration |
-    | **Recall@K** | Fraction of true connections in top-K ranked candidates |
-    """)
-
-    st.markdown("---")
-
-    # Dataset citation
-    st.markdown("## Dataset Citation")
-    st.markdown("""
-    This project uses connectome data from [FlyWire](https://flywire.ai/), a complete wiring
-    diagram of the adult fruit-fly brain (Drosophila melanogaster), built from the FAFB
-    (Full Adult Fly Brain) electron microscopy volume.
-
-    **Citation:** If you use this data, please cite the FlyWire consortium and the original
-    FAFB dataset as described at [https://flywire.ai/](https://flywire.ai/).
-    """)
+    <div class="flymind-card">
+        <p style="color:#A6ADBB; font-size:14px; line-height:1.6; margin:0">
+            This project uses connectome data from
+            <a href="https://flywire.ai/" target="_blank" style="color:#4FD1C5">FlyWire</a>,
+            a complete wiring diagram of the adult fruit-fly brain (Drosophila melanogaster),
+            built from the FAFB (Full Adult Fly Brain) electron microscopy volume.
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
