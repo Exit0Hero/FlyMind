@@ -133,20 +133,19 @@ def render(demo_id=None):
                 "<span class='candidate'>● Candidate (from local neighborhood)</span>",
                 unsafe_allow_html=True)
 
-    neighborhood = store.get_neighborhood(rid, max_depth=1)
-    if not neighborhood["nodes"]:
+    neighborhood = store.get_neighborhood(rid, direction="both", max_nodes=20)
+    if not neighborhood.nodes:
         st.info("No connectivity data available for this neuron.")
         return
 
     st.json({
-        "nodes": len(neighborhood["nodes"]),
-        "edges": len(neighborhood["edges"]),
-        "depth": neighborhood["depth"],
+        "nodes": len(neighborhood.nodes),
+        "edges": len(neighborhood.edges),
     })
 
     # Show edges in a table
-    if neighborhood["edges"]:
-        edge_df = pd.DataFrame(neighborhood["edges"])
+    if neighborhood.edges:
+        edge_df = pd.DataFrame(neighborhood.edges)
         edge_df["from"] = edge_df["from"].astype(str)
         edge_df["to"] = edge_df["to"].astype(str)
         st.dataframe(edge_df, use_container_width=True, height=300)

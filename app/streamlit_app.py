@@ -67,6 +67,7 @@ page = st.sidebar.radio(
     "Navigation",
     [
         "Overview",
+        "Pipeline Overview",
         "Neuron Explorer",
         "Connection Predictor",
         "Candidate Ranking",
@@ -87,6 +88,9 @@ st.sidebar.markdown(
 if page == "Overview":
     from app.pages import overview
     overview.render()
+elif page == "Pipeline Overview":
+    from app.pages import pipeline_overview
+    pipeline_overview.render()
 elif page == "Neuron Explorer":
     from app.pages import neuron_explorer
     neuron_explorer.render(demo_id=int(demo_neuron.split(" —")[0]) if demo_mode else None)

@@ -151,6 +151,7 @@ class FlyMindDataStore:
         self._outgoing_index = None
         self._incoming_index = None
         self._experiment_results = None
+        self._neuron_table_df = None
         self._loaded = False
 
     def _ensure_loaded(self) -> None:
@@ -372,6 +373,34 @@ class FlyMindDataStore:
         )
 
     # -------------------------------------------------------------------
+    # Score connection (delegates to inference layer)
+    # -------------------------------------------------------------------
+    def score_connection(self, source_root_id: int, target_root_id: int) -> ConnectionScore:
+        """Score a directed pair for connectivity likelihood.
+
+        Args:
+            source_root_id: Presynaptic neuron ID.
+            target_root_id: Postsynaptic neuron ID.
+
+        Returns:
+            ConnectionScore with model score and edge status.
+        """
+        return self._inference.score_connection(source_root_id, target_root_id)
+
+    def check_connection(self, source_root_id: int, target_root_id: int) -> bool:
+        """Check if a directed connection exists in the observed dataset.
+
+        Args:
+            source_root_id: Presynaptic neuron ID.
+            target_root_id: Postsynaptic neuron ID.
+
+        Returns:
+            True if the edge is observed, False otherwise.
+        """
+        result = self._inference.score_connection(source_root_id, target_root_id)
+        return result.is_known_edge
+
+    # -------------------------------------------------------------------
     # Candidate ranking (delegates to inference layer)
     # -------------------------------------------------------------------
     def rank_candidate_targets(
@@ -482,11 +511,12 @@ class FlyMindDataStore:
         Returns:
             numpy array of shape (15,) or None if neuron not found.
         """
-        self._ensure_loaded()
-        idx = self._id_to_idx.get(root_id)
-        if idx is None:
+        try:
+            inf = self._inference
+            inf._ensure_loaded()
+            return inf._X[inf._id_to_idx[root_id]]
+        except (KeyError, IndexError, AttributeError):
             return None
-        return self._X_features[idx]
 
     def get_ranking_distribution(self) -> dict:
         """Get held-out positive rank distribution (Experiment 3F).
@@ -654,6 +684,15 @@ class FlyMindDataStore:
         """Number of observed directed edges."""
         self._ensure_loaded()
         return len(self._edges_df) if self._edges_df is not None else 0
+
+    @property
+    def neuron_table(self) -> pd.DataFrame:
+        """The neuron metadata table."""
+        self._ensure_loaded()
+        if self._neuron_table_df is None:
+            nt_path = PROCESSED_DIR / "neuron_table.parquet"
+            self._neuron_table_df = pd.read_parquet(str(nt_path))
+        return self._neuron_table_df
 
 
 # ---------------------------------------------------------------------------
