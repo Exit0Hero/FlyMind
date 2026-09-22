@@ -1,7 +1,9 @@
 """Neuron lookup and search endpoints."""
 
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, Query
 
+from app.core.config import settings
+from app.core.errors import FlyMindError, InternalError, NeuronNotFoundError
 from app.schemas.models import (
     NeuronResponse,
     NeuronSearchItem,
@@ -13,11 +15,16 @@ router = APIRouter()
 
 
 @router.get("/neurons/search", response_model=NeuronSearchResponse)
-def search_neurons(q: str = Query(..., min_length=1), limit: int = Query(20, ge=1, le=100)):
+def search_neurons(
+    q: str = Query(..., min_length=1, max_length=128),
+    limit: int = Query(20, ge=1, le=100),
+):
     try:
         results = ml_service.search_neurons(q, limit=limit)
-    except Exception as exc:
-        raise HTTPException(status_code=500, detail=str(exc))
+    except FlyMindError:
+        raise
+    except Exception:
+        raise InternalError("Neuron search is not available")
 
     items = [
         NeuronSearchItem(
@@ -37,9 +44,11 @@ def get_neuron(root_id: int) -> NeuronResponse:
     try:
         neuron = ml_service.get_neuron(root_id)
     except KeyError:
-        raise HTTPException(status_code=404, detail=f"Neuron {root_id} not found")
-    except Exception as exc:
-        raise HTTPException(status_code=500, detail=str(exc))
+        raise NeuronNotFoundError(f"Neuron {root_id} not found")
+    except FlyMindError:
+        raise
+    except Exception:
+        raise InternalError("Neuron lookup is not available")
 
     return NeuronResponse(
         root_id=neuron.root_id,

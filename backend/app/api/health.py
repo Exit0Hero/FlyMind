@@ -1,4 +1,8 @@
-"""Health check endpoint."""
+"""Health check endpoint.
+
+Reports the liveness/load state of the service without ever triggering a
+model load. Use /api/ready for readiness (model-backed traffic).
+"""
 
 from fastapi import APIRouter
 

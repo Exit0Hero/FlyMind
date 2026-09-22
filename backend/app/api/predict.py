@@ -1,7 +1,8 @@
 """Predict endpoint for scoring directed neuron pairs."""
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter
 
+from app.core.errors import FlyMindError, InternalError, NeuronNotFoundError
 from app.schemas.models import PredictRequest, PredictResponse
 from app.services.ml_service import ml_service
 
@@ -12,10 +13,12 @@ router = APIRouter()
 def predict_connection(req: PredictRequest) -> PredictResponse:
     try:
         result = ml_service.score_connection(req.source_root_id, req.target_root_id)
-    except KeyError as exc:
-        raise HTTPException(status_code=404, detail=str(exc))
-    except Exception as exc:
-        raise HTTPException(status_code=500, detail=str(exc))
+    except KeyError:
+        raise NeuronNotFoundError("Source or target neuron was not found")
+    except FlyMindError:
+        raise
+    except Exception:
+        raise InternalError("Prediction service is not available")
 
     return PredictResponse(
         source_root_id=result.source_root_id,

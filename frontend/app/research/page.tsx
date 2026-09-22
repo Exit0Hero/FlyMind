@@ -15,6 +15,7 @@ import {
 import PageShell from "@/components/PageShell";
 import StatCard from "@/components/StatCard";
 import LoadingSkeleton from "@/components/LoadingSkeleton";
+import ErrorState from "@/components/ErrorState";
 import FeatureImportanceChart from "@/components/FeatureImportanceChart";
 import { getEvaluation, getResearchSummary } from "@/lib/api";
 import type { EvaluationResponse, ResearchSummary } from "@/lib/types";
@@ -30,15 +31,21 @@ export default function ResearchPage() {
   const [summary, setSummary] = useState<ResearchSummary | null>(null);
   const [evaluation, setEvaluation] = useState<EvaluationResponse | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [reloadKey, setReloadKey] = useState(0);
 
   useEffect(() => {
+    setLoading(true);
+    setError(null);
     Promise.allSettled([getResearchSummary(), getEvaluation()])
       .then(([s, e]) => {
         if (s.status === "fulfilled") setSummary(s.value);
         if (e.status === "fulfilled") setEvaluation(e.value);
+        const failed = [s, e].some((r) => r.status === "rejected");
+        if (failed) setError("Some research data could not be loaded.");
       })
       .finally(() => setLoading(false));
-  }, []);
+  }, [reloadKey]);
 
   const featureImportance = getFeatureImportance(evaluation);
   const ranking = getRankingMetrics(evaluation);
@@ -73,6 +80,8 @@ export default function ResearchPage() {
             <LoadingSkeleton variant="chart" count={1} />
           </div>
         </>
+      ) : error ? (
+        <ErrorState message={error} onRetry={() => setReloadKey((k) => k + 1)} />
       ) : (
         <div className="space-y-10">
           {/* Summary */}

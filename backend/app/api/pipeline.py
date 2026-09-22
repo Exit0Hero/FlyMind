@@ -1,7 +1,5 @@
 """Pipeline status endpoint."""
 
-from pathlib import Path
-
 from fastapi import APIRouter
 
 from app.core.config import settings
@@ -12,11 +10,11 @@ router = APIRouter()
 
 
 def _check_model_file() -> PipelineStage:
-    p = settings.MODELS_DIR / "link_prediction_rf.pkl"
+    p = settings.MODEL_PATH
     if p.exists():
         size_mb = p.stat().st_size / (1024 * 1024)
         return PipelineStage(name="trained_model", status="ready", detail=f"{size_mb:.1f} MB")
-    return PipelineStage(name="trained_model", status="missing", detail=str(p))
+    return PipelineStage(name="trained_model", status="missing", detail=p.name)
 
 
 def _check_features() -> PipelineStage:

@@ -2,8 +2,10 @@
 
 import math
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter
 
+from app.core.config import settings
+from app.core.errors import LimitExceededError, FlyMindError, InternalError, NeuronNotFoundError
 from app.schemas.models import CandidatesRequest, CandidatesResponse, CandidateItem
 from app.services.ml_service import ml_service
 
@@ -20,16 +22,27 @@ def _clean_str(val):
 
 @router.post("/candidates", response_model=CandidatesResponse)
 def rank_candidates(req: CandidatesRequest) -> CandidatesResponse:
+    if req.k > settings.MAX_K:
+        raise LimitExceededError(
+            f"k exceeds the configured maximum of {settings.MAX_K}"
+        )
+    if req.candidate_pool_size > settings.MAX_CANDIDATES:
+        raise LimitExceededError(
+            f"candidate_pool_size exceeds the configured maximum of {settings.MAX_CANDIDATES}"
+        )
+
     try:
         candidates = ml_service.rank_candidate_targets(
             req.source_root_id,
             k=req.k,
             candidate_pool_size=req.candidate_pool_size,
         )
-    except KeyError as exc:
-        raise HTTPException(status_code=404, detail=str(exc))
-    except Exception as exc:
-        raise HTTPException(status_code=500, detail=str(exc))
+    except KeyError:
+        raise NeuronNotFoundError("Source neuron was not found")
+    except FlyMindError:
+        raise
+    except Exception:
+        raise InternalError("Candidate ranking service is not available")
 
     items = [
         CandidateItem(

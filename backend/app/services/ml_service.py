@@ -1,13 +1,24 @@
-"""ML service wrapping FlyMindInference with lazy loading."""
+"""ML service wrapping FlyMindInference with lazy loading and safety guards.
+
+Lazy-loading is thread-safe (double-checked locking) and runs the model
+integrity + feature-contract guard before the artifact is served. Any load or
+validation failure is logged in full server-side but exposed to clients only
+as a :class:`app.core.errors.ModelUnavailableError` (503).
+"""
 
 from __future__ import annotations
 
+import logging
 import sys
 import threading
 from pathlib import Path
 from typing import Any, Optional
 
 from app.core.config import settings
+from app.core.errors import ModelUnavailableError
+from app.services.model_guard import guard_model_load, verify_artifact_integrity
+
+log = logging.getLogger("flymind.ml_service")
 
 
 class MLService:
@@ -33,17 +44,49 @@ class MLService:
                 return
             try:
                 self._ensure_src_on_path()
+
+                # 1. Artifact integrity (exists? sha-256 matches metadata?)
+                verify_artifact_integrity(
+                    model_path=settings.MODEL_PATH,
+                    metadata_path=settings.MODEL_METADATA_PATH,
+                    integrity_check_enabled=settings.ENABLE_MODEL_INTEGRITY_CHECK,
+                )
+
+                # 2. Load the research inference layer.
                 from src.link_prediction.inference import FlyMindInference
-                self._inference = FlyMindInference()
-                self._inference._ensure_loaded()
+
+                inference = FlyMindInference()
+                inference._ensure_loaded()
+
+                # 3. Structural / feature-contract validation.
+                guard_model_load(inference)
+
+                self._inference = inference
                 self._loaded = True
+                log.info(
+                    "model loaded",
+                    extra={
+                        "fields": {
+                            "version": settings.MODEL_VERSION,
+                            "path": settings.MODEL_PATH.name,
+                            "neurons": inference.n_neurons,
+                            "edges": inference.n_edges,
+                        }
+                    },
+                )
+            except ModelUnavailableError as exc:
+                log.error("model load rejected", exc_info=exc)
+                self._error = exc.message
             except Exception as exc:
-                self._error = str(exc)
+                log.exception("model failed to load")
+                self._error = "ML model could not be loaded on this instance"
 
     def _ensure_loaded(self) -> None:
         self._load()
-        if self._error:
-            raise RuntimeError(f"ML model failed to load: {self._error}")
+        if self._error is not None:
+            raise ModelUnavailableError(self._error)
+        if not self._loaded:
+            raise ModelUnavailableError("Model is not loaded yet")
 
     # ------------------------------------------------------------------
     # Public helpers
@@ -71,6 +114,10 @@ class MLService:
         candidate_pool_size: int = 1000,
     ) -> list[Any]:
         self._ensure_loaded()
+        # Defense in depth: clamp to configured caps even if a caller bypasses
+        # the API validation layer.
+        k = max(1, min(k, settings.MAX_K))
+        candidate_pool_size = max(1, min(candidate_pool_size, settings.MAX_CANDIDATES))
         return self._inference.rank_candidate_targets(
             source_root_id, k=k, candidate_pool_size=candidate_pool_size,
         )
@@ -101,6 +148,10 @@ class MLService:
         return list(self._inference._feature_cols)
 
     @property
+    def model_version(self) -> str:
+        return settings.MODEL_VERSION
+
+    @property
     def model_info(self) -> dict[str, Any]:
         self._ensure_loaded()
         rf = self._inference._rf
@@ -113,6 +164,7 @@ class MLService:
     def search_neurons(self, query: str, limit: int = 20) -> list[dict[str, Any]]:
         """Search neurons by root_id (exact/prefix), name (substring), or primary_type (substring)."""
         self._ensure_loaded()
+        limit = min(max(int(limit), 1), settings.MAX_SEARCH_LIMIT)
         lookup = self._inference._nt_lookup
         results: list[dict[str, Any]] = []
 

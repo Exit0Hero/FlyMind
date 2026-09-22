@@ -23,6 +23,7 @@ class HealthResponse(BaseModel):
 # ---------------------------------------------------------------------------
 class ModelInfoResponse(BaseModel):
     model_type: str = "RandomForestClassifier"
+    model_version: str | None = None
     n_estimators: int | None = None
     feature_dim: int | None = None
     node_feature_dim: int | None = None
@@ -99,8 +100,8 @@ class NeuronSearchResponse(BaseModel):
 # Predict
 # ---------------------------------------------------------------------------
 class PredictRequest(BaseModel):
-    source_root_id: int = Field(..., description="Presynaptic neuron root ID")
-    target_root_id: int = Field(..., description="Postsynaptic neuron root ID")
+    source_root_id: int = Field(..., gt=0, description="Presynaptic neuron root ID")
+    target_root_id: int = Field(..., gt=0, description="Postsynaptic neuron root ID")
 
 
 class PredictResponse(BaseModel):
@@ -115,8 +116,10 @@ class PredictResponse(BaseModel):
 # Candidates
 # ---------------------------------------------------------------------------
 class CandidatesRequest(BaseModel):
-    source_root_id: int = Field(..., description="Presynaptic neuron root ID")
-    k: int = Field(10, ge=1, le=100, description="Number of top candidates to return")
+    source_root_id: int = Field(..., gt=0, description="Presynaptic neuron root ID")
+    # Hard memory ceilings; the configured FLYMIND_MAX_K / FLYMIND_MAX_CANDIDATES
+    # operational caps are enforced in the endpoint (429).
+    k: int = Field(10, ge=1, le=1000, description="Number of top candidates to return")
     candidate_pool_size: int = Field(1000, ge=100, le=10000)
 
 
