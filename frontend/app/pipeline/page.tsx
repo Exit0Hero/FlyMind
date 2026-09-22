@@ -11,12 +11,6 @@ import type { PipelineStatus, ModelMetadata, EvaluationResponse } from "@/lib/ty
 import { metric, fmtPct } from "@/lib/metrics";
 import type { FlowStage } from "@/components/PipelineFlow";
 
-function toStatus(s: string): "ready" | "pending" | "error" {
-  if (s === "ready") return "ready";
-  if (s === "error") return "error";
-  return "pending";
-}
-
 export default function PipelinePage() {
   const [pipeline, setPipeline] = useState<PipelineStatus | null>(null);
   const [model, setModel] = useState<ModelMetadata | null>(null);
@@ -33,8 +27,10 @@ export default function PipelinePage() {
         if (p.status === "fulfilled") setPipeline(p.value);
         if (m.status === "fulfilled") setModel(m.value);
         if (e.status === "fulfilled") setEvaluation(e.value);
+        const ok = [p, m, e].filter((r) => r.status === "fulfilled").length;
+        if (ok === 0) setError("Unable to load pipeline status.");
+        else if (ok < 3) setError("Some pipeline data could not be loaded.");
       })
-      .catch(() => setError("Unable to load pipeline status."))
       .finally(() => setLoading(false));
   };
 
@@ -58,7 +54,7 @@ export default function PipelinePage() {
       description:
         "Public FlyWire whole-brain connectome for Drosophila melanogaster — neuron metadata, synaptic partner tables, and neurotransmitter predictions.",
       artifact: "Dataset CSV archives",
-      metric: { label: "Neurons in dataset", value: `${model?.n_neurons?.toLocaleString() ?? "139,255"}` },
+      metric: { label: "Neurons in dataset", value: model?.n_neurons != null ? model.n_neurons.toLocaleString() : "—" },
     },
     {
       key: "etl",
@@ -67,7 +63,7 @@ export default function PipelinePage() {
       description:
         "Parse and clean CSV archives into a unified neuron table with typed, NaN-safe columns (`nt_type_score`, neurotransmitter averages, morphology, coordinates).",
       artifact: "data/processed/neuron_table.parquet",
-      metric: { label: "Directed connections", value: `${model?.n_edges?.toLocaleString() ?? "3,732,460"}` },
+      metric: { label: "Directed connections", value: model?.n_edges != null ? model.n_edges.toLocaleString() : "—" },
     },
     {
       key: "features",
@@ -83,9 +79,11 @@ export default function PipelinePage() {
       title: "Random Forest",
       status: isReady("trained_model") ? "ready" : isError("trained_model") ? "error" : "pending",
       description:
-        "A Random Forest classifier (100 trees) trained on 60D pair features, seeded for reproducibility. Classifies directed pairs as connected vs not.",
-      artifact: `models/link_prediction_rf.pkl (${model?.n_estimators ?? 100} estimators)`,
-      metric: { label: `Cold-start ROC-AUC (${rocAuc != null ? fmtPct(rocAuc) : "0.98"})`, value: `${model?.model_type ?? "RandomForestClassifier"}` },
+        "A Random Forest classifier trained on 60D pair features, seeded for reproducibility. Classifies directed pairs as connected vs not.",
+      artifact: model?.n_estimators != null
+        ? `models/link_prediction_rf.pkl (${model.n_estimators} estimators)`
+        : "models/link_prediction_rf.pkl",
+      metric: { label: `Cold-start ROC-AUC (${rocAuc != null ? fmtPct(rocAuc) : "—"})`, value: model?.model_type ?? "—" },
     },
     {
       key: "evaluation",
@@ -94,7 +92,7 @@ export default function PipelinePage() {
       description:
         "Held-out and cold-start evaluation across 8 experiment families: random/heuristic/GNN baselines, per-source ranking, seed stability, calibration.",
       artifact: "results/reports/*.json",
-      metric: { label: "Cold-start PR-AUC", value: prAuc != null ? fmtPct(prAuc) : "0.974" },
+      metric: { label: "Cold-start PR-AUC", value: prAuc != null ? fmtPct(prAuc) : "—" },
     },
     {
       key: "prediction",
@@ -103,7 +101,7 @@ export default function PipelinePage() {
       description:
         "Production inference scores any directed pair. Outputs are model-suggested connection scores — patterns learned from observed connectivity, not biological proof.",
       artifact: "src/link_prediction/inference.py",
-      metric: { label: "In-memory neurons", value: `${model?.n_neurons?.toLocaleString() ?? "139,255"}` },
+      metric: { label: "In-memory neurons", value: model?.n_neurons != null ? model.n_neurons.toLocaleString() : "—" },
     },
     {
       key: "ranking",
@@ -112,7 +110,7 @@ export default function PipelinePage() {
       description:
         "Rank candidate target neurons for a source with memory-safe bounded sampling, excluding self-loops and already-observed edges.",
       artifact: "POST /api/candidates",
-      metric: { label: "Mean Recall@10", value: recallAt10 != null ? fmtPct(recallAt10) : "0.814" },
+      metric: { label: "Mean Recall@10", value: recallAt10 != null ? fmtPct(recallAt10) : "—" },
     },
   ];
 
@@ -138,16 +136,17 @@ export default function PipelinePage() {
         </button>
       </header>
 
-      {error && (
-        <div className="mb-6">
-          <ErrorState message={error} onRetry={load} />
-        </div>
-      )}
-
       {loading && !pipeline ? (
         <LoadingSkeleton variant="pipeline" count={5} label="Loading pipeline stages..." />
+      ) : error && !pipeline ? (
+        <ErrorState message={error} onRetry={load} />
       ) : (
         <div className="grid grid-cols-1 gap-8">
+          {error && (
+            <div>
+              <ErrorState message={error} onRetry={load} />
+            </div>
+          )}
           <PipelineFlow
             stages={stages}
             selectedKey={selected}

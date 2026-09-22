@@ -2,7 +2,6 @@
 
 from fastapi import APIRouter, Query
 
-from app.core.config import settings
 from app.core.errors import FlyMindError, InternalError, NeuronNotFoundError
 from app.schemas.models import (
     NeuronResponse,
@@ -23,7 +22,7 @@ def search_neurons(
         results = ml_service.search_neurons(q, limit=limit)
     except FlyMindError:
         raise
-    except Exception:
+    except Exception:  # noqa: BLE001 — API boundary: map any unexpected error to 500
         raise InternalError("Neuron search is not available")
 
     items = [
@@ -47,7 +46,7 @@ def get_neuron(root_id: int) -> NeuronResponse:
         raise NeuronNotFoundError(f"Neuron {root_id} not found")
     except FlyMindError:
         raise
-    except Exception:
+    except Exception:  # noqa: BLE001 — API boundary: map any unexpected error to 500
         raise InternalError("Neuron lookup is not available")
 
     return NeuronResponse(

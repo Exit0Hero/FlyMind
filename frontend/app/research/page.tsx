@@ -41,8 +41,9 @@ export default function ResearchPage() {
       .then(([s, e]) => {
         if (s.status === "fulfilled") setSummary(s.value);
         if (e.status === "fulfilled") setEvaluation(e.value);
-        const failed = [s, e].some((r) => r.status === "rejected");
-        if (failed) setError("Some research data could not be loaded.");
+        const ok = [s, e].filter((r) => r.status === "fulfilled").length;
+        if (ok === 0) setError("Unable to load research data.");
+        else if (ok < 2) setError("Some research data could not be loaded.");
       })
       .finally(() => setLoading(false));
   }, [reloadKey]);
@@ -80,10 +81,15 @@ export default function ResearchPage() {
             <LoadingSkeleton variant="chart" count={1} />
           </div>
         </>
-      ) : error ? (
+      ) : error && !summary && !evaluation ? (
         <ErrorState message={error} onRetry={() => setReloadKey((k) => k + 1)} />
       ) : (
         <div className="space-y-10">
+          {error && (
+            <div>
+              <ErrorState message={error} onRetry={() => setReloadKey((k) => k + 1)} />
+            </div>
+          )}
           {/* Summary */}
           {summary && (
             <section className="bg-surface border border-border-subtle rounded-[var(--radius-lg)] p-6">

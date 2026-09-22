@@ -10,8 +10,8 @@
 | Load mechanism | `pickle.load()` on first use (lazy) |
 | Singleton | Module-level `_inference_instance` via `get_inference()` |
 | Streamlit caching | `@st.cache_resource` on `get_datastore()` |
-| Validation | None — trusts pickle contents |
-| Hash verification | None |
+| Validation | `model_guard.validate_loaded_model` — model class, 15/60 feature contract, matrix shape |
+| Hash verification | `model_guard.verify_artifact_integrity` — SHA-256 of the pickle vs metadata (`FLYMIND_ENABLE_MODEL_INTEGRITY_CHECK`) |
 
 ## Feature Construction
 

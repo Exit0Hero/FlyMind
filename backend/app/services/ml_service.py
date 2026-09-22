@@ -9,14 +9,18 @@ as a :class:`app.core.errors.ModelUnavailableError` (503).
 from __future__ import annotations
 
 import logging
+import math
 import sys
 import threading
-from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 from app.core.config import settings
 from app.core.errors import ModelUnavailableError
-from app.services.model_guard import guard_model_load, verify_artifact_integrity
+from app.services.model_guard import (
+    guard_model_load,
+    read_metadata,
+    verify_artifact_integrity,
+)
 
 log = logging.getLogger("flymind.ml_service")
 
@@ -77,7 +81,7 @@ class MLService:
             except ModelUnavailableError as exc:
                 log.error("model load rejected", exc_info=exc)
                 self._error = exc.message
-            except Exception as exc:
+            except Exception:
                 log.exception("model failed to load")
                 self._error = "ML model could not be loaded on this instance"
 
@@ -87,6 +91,16 @@ class MLService:
             raise ModelUnavailableError(self._error)
         if not self._loaded:
             raise ModelUnavailableError("Model is not loaded yet")
+
+    def ensure_load(self) -> bool:
+        """Idempotent warm-up used by the readiness probe.
+
+        Never raises. Returns True when the model is loaded afterwards.
+        Failures are recorded on :attr:`load_error` so `/api/ready` can
+        surface a client-safe reason instead of hanging on a cold start.
+        """
+        self._load()
+        return self._loaded
 
     # ------------------------------------------------------------------
     # Public helpers
@@ -149,7 +163,15 @@ class MLService:
 
     @property
     def model_version(self) -> str:
-        return settings.MODEL_VERSION
+        # Prefer the frozen artifact metadata so the version surface tracks a
+        # model swap without a code deploy; fall back to settings.
+        meta = read_metadata(settings.MODEL_METADATA_PATH)
+        return str(meta.get("model_version") or settings.MODEL_VERSION)
+
+    @property
+    def model_artifact(self) -> str:
+        meta = read_metadata(settings.MODEL_METADATA_PATH)
+        return str(meta.get("artifact_filename") or settings.MODEL_FILENAME)
 
     @property
     def model_info(self) -> dict[str, Any]:
@@ -179,7 +201,7 @@ class MLService:
         def _str(val: Any) -> str:
             if val is None:
                 return ""
-            if isinstance(val, float) and (val != val):  # NaN check
+            if isinstance(val, float) and math.isnan(val):
                 return ""
             return str(val)
 

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import {
   LayoutDashboard,
@@ -16,6 +16,7 @@ import {
   Menu,
   X,
 } from "lucide-react";
+import { getHealth } from "@/lib/api";
 
 const NAV_ITEMS = [
   { href: "/", label: "Overview", icon: LayoutDashboard },
@@ -30,8 +31,40 @@ const NAV_ITEMS = [
 export default function Sidebar() {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [healthState, setHealthState] = useState<"checking" | "online" | "offline">("checking");
+
+  useEffect(() => {
+    let cancelled = false;
+    const check = () =>
+      getHealth()
+        .then(() => {
+          if (!cancelled) setHealthState("online");
+        })
+        .catch(() => {
+          if (!cancelled) setHealthState("offline");
+        });
+    check();
+    const id = setInterval(check, 30_000);
+    return () => {
+      cancelled = true;
+      clearInterval(id);
+    };
+  }, []);
 
   const closeMobile = () => setMobileOpen(false);
+
+  const statusDot =
+    healthState === "online"
+      ? "bg-success animate-pulse-slow"
+      : healthState === "offline"
+        ? "bg-error"
+        : "bg-warning animate-pulse-slow";
+  const statusLabel =
+    healthState === "online"
+      ? "System Online"
+      : healthState === "offline"
+        ? "System Offline"
+        : "Checking…";
 
   const content = (
     <>
@@ -87,8 +120,8 @@ export default function Sidebar() {
 
       <div className="px-5 py-4 border-t border-border-subtle">
         <div className="flex items-center gap-2">
-          <div className="w-2 h-2 rounded-full bg-success animate-pulse-slow" />
-          <span className="text-xs text-text-muted">System Online</span>
+          <div className={`w-2 h-2 rounded-full ${statusDot}`} />
+          <span className="text-xs text-text-muted">{statusLabel}</span>
         </div>
       </div>
     </>

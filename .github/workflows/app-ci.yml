@@ -1,16 +1,16 @@
-# FlyMind continuous integration — app-level checks (Phase 16).
+# FlyMind continuous integration — app-level checks (Phase 16/17).
 #
-# This workflow is deliberately separate from the legacy dashboard CI
-# (`.github/workflows/ci.yml`) and runs on the production components that
-# Phase 16 ships. It never touches the flywear experiments, the model artifact
-# or the dataset:
+# Replaces the legacy Streamlit-era `ci.yml` (impossible on a clean runner:
+# no pytest install, Docker job needed git-ignored parquet/pkl). Runs only on
+# the production components that Phase 16/17 ships and never touches the
+# experiments, the model artifact or the dataset:
 #   * Backend: fixture-only tests using the stub ML service (no artifact, no
 #     network dataset fetch). Runtime + dev deps installed from committed
 #     requirements files.
-#   * Frontend: type-check (tsc --noEmit) + production build (next build).
-#   * Live smoke against the *started* FastAPI app: /api/health, /api/ready and
-#     /api/version are probed through TestClient to assert the HTTP contract is
-#     actually served (model stays not loaded — readiness reflects it).
+#   * Frontend: ESLint + type-check (tsc --noEmit) + production build.
+#   * Live smoke against the *started* FastAPI app: /api/health, /api/version
+#     and /api/ready contracts via TestClient (ready is 503 without artifact).
+#   * Docker: both production images build from the committed Dockerfiles.
 #
 # Secrets/artifacts policy: CI has no access to .env, models/, data/ or
 # experiments/. Health gates use /api/health (liveness); /api/ready is asserted
@@ -23,7 +23,7 @@ on:
   pull_request:
     branches: [main]
   push:
-    branches: [main]
+    branches: [main, "feature/**", "release/**"]
   workflow_dispatch:
 
 env:
@@ -61,7 +61,7 @@ jobs:
         run: python -m pytest tests -q
 
   frontend-ci:
-    name: Frontend (type-check · build)
+    name: Frontend (lint · type-check · build)
     runs-on: ubuntu-22.04
     defaults:
       run:
@@ -79,6 +79,9 @@ jobs:
       - name: Install dependencies
         run: npm ci --ignore-scripts --no-audit --no-fund
 
+      - name: ESLint
+        run: npm run lint
+
       - name: Type-check
         run: npx tsc --noEmit
 
@@ -89,7 +92,7 @@ jobs:
           BACKEND_URL: http://backend:8001
 
   api-contract:
-    name: Live API smoke (health · ready · version)
+    name: Live API smoke (health · version · ready)
     runs-on: ubuntu-22.04
     needs: backend-ci
     steps:
@@ -109,3 +112,15 @@ jobs:
 
       - name: Probe the served HTTP API
         run: python scripts/smoke_api.py
+
+  docker-build:
+    name: Docker build (backend · frontend)
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build backend image (repo-root context)
+        run: docker build -f backend/Dockerfile -t flymind-backend:ci .
+
+      - name: Build frontend image
+        run: docker build -f frontend/Dockerfile -t flymind-frontend:ci frontend

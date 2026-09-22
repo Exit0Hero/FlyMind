@@ -14,7 +14,8 @@ import json
 import logging
 import sys
 import time
-from typing import Any, Mapping, Optional
+from collections.abc import Mapping
+from typing import Any
 
 from app.core.config import settings
 
@@ -39,7 +40,7 @@ class _StructuredFormatter(logging.Formatter):
         return json.dumps(payload, default=str)
 
 
-def setup_logging(level: Optional[str] = None) -> logging.Logger:
+def setup_logging(level: str | None = None) -> logging.Logger:
     """Configure the FlyMind root logger and return it.
 
     Safe to call more than once; reconfiguration only happens if the root

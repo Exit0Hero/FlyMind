@@ -50,18 +50,6 @@ function isPlainObject(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
-async function readErrorMessage(res: Response): Promise<string> {
-  try {
-    const body = (await res.json()) as unknown;
-    if (isPlainObject(body) && isPlainObject(body.error) && typeof body.error.message === "string") {
-      return body.error.message;
-    }
-    return `API error ${res.status} ${res.statusText}`;
-  } catch {
-    return `API error ${res.status} ${res.statusText}`;
-  }
-}
-
 async function request<T>(path: string, init: RequestInit, options: RetryableOptions = {}): Promise<T> {
   const timeoutMs = options.timeoutMs ?? DEFAULT_TIMEOUT_MS;
   const retries = options.retries ?? MAX_AUTOMATIC_RETRIES;
@@ -78,7 +66,7 @@ async function request<T>(path: string, init: RequestInit, options: RetryableOpt
         let error: FlyMindApiError;
         try {
           const body = (await res.json()) as unknown;
-          const { status, code, message, request_id } = (isPlainObject(body) &&
+          const { code, message, request_id } = (isPlainObject(body) &&
             isPlainObject(body.error) &&
             body.error) as Record<string, unknown>;
           error = new FlyMindApiError(

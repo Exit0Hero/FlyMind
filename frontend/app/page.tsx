@@ -26,7 +26,8 @@ import {
   getEvaluation,
 } from "@/lib/api";
 import type { HealthStatus, ModelMetadata, EvaluationResponse } from "@/lib/types";
-import { metric, fmtPct, fmtNum } from "@/lib/metrics";
+import { metric, fmtNum } from "@/lib/metrics";
+import ErrorState from "@/components/ErrorState";
 
 const HERO_PIPELINE = [
   { label: "FlyWire Data", icon: Database },
@@ -82,22 +83,30 @@ export default function OverviewPage() {
   const [model, setModel] = useState<ModelMetadata | null>(null);
   const [evaluation, setEvaluation] = useState<EvaluationResponse | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
+  const load = () => {
+    setLoading(true);
+    setError(null);
     Promise.allSettled([getHealth(), getModel(), getEvaluation()])
       .then(([h, m, e]) => {
         if (h.status === "fulfilled") setHealth(h.value);
         if (m.status === "fulfilled") setModel(m.value);
         if (e.status === "fulfilled") setEvaluation(e.value);
+        const ok = [h, m, e].filter((r) => r.status === "fulfilled").length;
+        if (ok === 0) setError("Unable to load metrics from the API.");
+        else if (ok < 3) setError("Some metrics could not be loaded.");
       })
       .finally(() => setLoading(false));
-  }, []);
+  };
 
-  // Real metrics from validated artifacts
-  const nNeurons = model?.n_neurons ?? health?.n_neurons ?? 139255;
-  const nEdges = model?.n_edges ?? health?.n_edges ?? 3732460;
-  const rocAuc = metric(evaluation, ["cold_start", "rf_node_only", "roc_auc"]) ?? 0.98;
-  const prAuc = metric(evaluation, ["cold_start", "rf_node_only", "pr_auc"]) ?? 0.9739;
+  useEffect(() => { load(); }, []);
+
+  // Live values only — never hardcode dataset or evaluation numbers.
+  const nNeurons = model?.n_neurons ?? health?.n_neurons ?? null;
+  const nEdges = model?.n_edges ?? health?.n_edges ?? null;
+  const rocAuc = metric(evaluation, ["cold_start", "rf_node_only", "roc_auc"]);
+  const prAuc = metric(evaluation, ["cold_start", "rf_node_only", "pr_auc"]);
 
   return (
     <PageShell>
@@ -146,18 +155,26 @@ export default function OverviewPage() {
       {/* ---------- Key metrics ---------- */}
       {loading ? (
         <LoadingSkeleton variant="cards" count={4} label="Loading model metrics..." />
+      ) : error && !model && !health && !evaluation ? (
+        <div className="mb-10">
+          <ErrorState message={error} onRetry={load} />
+        </div>
       ) : (
         <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-10" aria-label="Key metrics">
           <StatCard
             label="Neurons"
-            value={nNeurons.toLocaleString()}
-            sublabel={`${model?.n_features ?? 15} biological & morphological features each`}
+            value={nNeurons != null ? nNeurons.toLocaleString() : "—"}
+            sublabel={
+              model?.n_features != null
+                ? `${model.n_features} biological & morphological features each`
+                : "Awaiting model metadata"
+            }
             accent="accent"
           />
           <StatCard
             label="Directed Connections"
-            value={`${(nEdges / 1e6).toFixed(2)}M`}
-            sublabel={`${nEdges.toLocaleString()} in evaluated dataset`}
+            value={nEdges != null ? `${(nEdges / 1e6).toFixed(2)}M` : "—"}
+            sublabel={nEdges != null ? `${nEdges.toLocaleString()} in evaluated dataset` : "—"}
             accent="violet"
           />
           <StatCard

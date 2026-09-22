@@ -12,7 +12,7 @@ filesystem paths, no internal variable dumps.
 
 from __future__ import annotations
 
-from typing import Any, Optional
+from typing import Any
 
 
 class FlyMindError(Exception):
@@ -25,8 +25,8 @@ class FlyMindError(Exception):
         self,
         message: str,
         *,
-        status_code: Optional[int] = None,
-        code: Optional[str] = None,
+        status_code: int | None = None,
+        code: str | None = None,
     ) -> None:
         super().__init__(message)
         if status_code is not None:
@@ -38,7 +38,7 @@ class FlyMindError(Exception):
     def message(self) -> str:
         return str(self)
 
-    def to_payload(self, request_id: Optional[str] = None) -> dict[str, Any]:
+    def to_payload(self, request_id: str | None = None) -> dict[str, Any]:
         payload: dict[str, Any] = {"error": {"code": self.code, "message": self.message}}
         if request_id:
             payload["error"]["request_id"] = request_id

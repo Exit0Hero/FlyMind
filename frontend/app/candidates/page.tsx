@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { Fragment, useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ListOrdered,
@@ -220,15 +220,15 @@ export default function CandidatesPage() {
                     {filtered.map((c) => {
                       const isOpen = expanded === c.target_root_id;
                       return (
-                        <motion.tr
-                          key={c.target_root_id}
-                          layout
-                          initial={{ opacity: 0, y: 6 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          exit={{ opacity: 0 }}
-                          transition={{ duration: 0.2 }}
-                          className="border-b border-border-subtle last:border-0 hover:bg-elevated/40 transition-colors"
-                        >
+                        <Fragment key={c.target_root_id}>
+                          <motion.tr
+                            layout
+                            initial={{ opacity: 0, y: 6 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0 }}
+                            transition={{ duration: 0.2 }}
+                            className="border-b border-border-subtle last:border-0 hover:bg-elevated/40 transition-colors"
+                          >
                           <td className="px-4 py-3">
                             <span className={`inline-flex items-center justify-center w-7 h-7 rounded-full text-xs font-bold ${
                               c.rank <= 3 ? "bg-violet/15 text-violet" : "bg-elevated text-text-muted"
@@ -265,9 +265,9 @@ export default function CandidatesPage() {
                               <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${isOpen ? "rotate-180 text-accent" : ""}`} />
                             </button>
                           </td>
+                          </motion.tr>
                           {isOpen && (
                             <motion.tr
-                              key={`${c.target_root_id}-detail`}
                               initial={{ opacity: 0, height: 0 }}
                               animate={{ opacity: 1, height: "auto" }}
                               exit={{ opacity: 0, height: 0 }}
@@ -298,7 +298,7 @@ export default function CandidatesPage() {
                               </td>
                             </motion.tr>
                           )}
-                        </motion.tr>
+                        </Fragment>
                       );
                     })}
                   </AnimatePresence>
@@ -310,7 +310,7 @@ export default function CandidatesPage() {
           <div className="mt-4 p-4 rounded-[var(--radius-md)] border border-border-subtle bg-elevated flex items-start gap-2.5">
             <AlertCircle className="w-4 h-4 text-text-muted shrink-0 mt-0.5" />
             <p className="text-[11px] text-text-muted leading-relaxed">
-              Rankings reflect the model's learned scoring of candidate targets. These are{" "}
+              Rankings reflect the model&apos;s learned scoring of candidate targets. These are{" "}
               <strong className="text-text-primary">model-suggested candidate connections</strong> for further
               investigation — not confirmed biological connections.
             </p>

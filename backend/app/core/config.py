@@ -110,7 +110,7 @@ class Settings(BaseSettings):
     def MODEL_METADATA_PATH(self) -> Path:
         return self.MODELS_DIR / self.MODEL_METADATA_FILENAME
 
-    def model_post_init(self, __context) -> None:
+    def model_post_init(self, __context, /) -> None:
         if self.DATA_ROOT is None or not self.DATA_ROOT.exists():
             object.__setattr__(self, "DATA_ROOT", self.PROJECT_ROOT / "data")
         if self.MODELS_DIR is None or not self.MODELS_DIR.exists():

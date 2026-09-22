@@ -45,9 +45,12 @@ RUN groupadd --system flymind && useradd --system --gid flymind --home-dir /app 
 WORKDIR /app
 
 # Runtime layer needs only the compiled build + production deps.
+# next.config.ts is copied too so rewrites stay inspectable in the running
+# container (the active rewrite table is already compiled into .next).
 COPY --from=deps --chown=flymind:flymind /app/node_modules ./node_modules
 COPY --from=build --chown=flymind:flymind /app/.next ./.next
 COPY --from=build --chown=flymind:flymind /app/package.json ./package.json
+COPY --from=build --chown=flymind:flymind /app/next.config.ts ./next.config.ts
 
 USER flymind
 

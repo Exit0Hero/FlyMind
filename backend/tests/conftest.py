@@ -24,11 +24,12 @@ if str(BACKEND_DIR) in sys.path:
 sys.path.insert(0, str(BACKEND_DIR))
 
 import sys as _sys
+
 # If a legacy `app` package was imported before we could pin the path, drop it
 # from sys.modules so this import resolves to backend/app.
 _sys.modules.pop("app", None)
-from app.main import app  # noqa: E402
-from app.services.ml_service import ml_service  # noqa: E402
+from app.main import app
+from app.services.ml_service import ml_service
 
 
 class FakeInference:

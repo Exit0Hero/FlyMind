@@ -5,8 +5,13 @@ import math
 from fastapi import APIRouter
 
 from app.core.config import settings
-from app.core.errors import LimitExceededError, FlyMindError, InternalError, NeuronNotFoundError
-from app.schemas.models import CandidatesRequest, CandidatesResponse, CandidateItem
+from app.core.errors import (
+    FlyMindError,
+    InternalError,
+    LimitExceededError,
+    NeuronNotFoundError,
+)
+from app.schemas.models import CandidateItem, CandidatesRequest, CandidatesResponse
 from app.services.ml_service import ml_service
 
 router = APIRouter()
@@ -41,7 +46,7 @@ def rank_candidates(req: CandidatesRequest) -> CandidatesResponse:
         raise NeuronNotFoundError("Source neuron was not found")
     except FlyMindError:
         raise
-    except Exception:
+    except Exception:  # noqa: BLE001 — API boundary: map any unexpected error to 500
         raise InternalError("Candidate ranking service is not available")
 
     items = [

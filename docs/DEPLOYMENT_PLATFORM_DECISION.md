@@ -1,5 +1,11 @@
 # FlyMind Deployment Platform Decision
 
+> **Status (Phase 17): SUPERSEDED.** The Streamlit-era decision below is
+> historical only. The production deployment is the split architecture in
+> `docs/DEPLOYMENT.md`: Next.js frontend on Vercel + FastAPI backend on this
+> machine (`BACKEND_URL=http://152.58.46.80:8001`), with Docker Compose as the
+> single-origin reference stack.
+
 ## Options Evaluated
 
 | Platform | RAM | Free Tier | Container | Public URL | Notes |

@@ -33,10 +33,6 @@ class RequestContextMiddleware(BaseHTTPMiddleware):
         started = time.perf_counter()
         try:
             response = await call_next(request)
-        except Exception:
-            # Attach headers even when a handler bubbles an exception through
-            # an unhandled path; exception handlers normally swallow this.
-            raise
         finally:
             duration_ms = (time.perf_counter() - started) * 1000.0
 

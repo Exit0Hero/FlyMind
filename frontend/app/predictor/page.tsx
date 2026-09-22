@@ -1,12 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Zap,
   ArrowDown,
   Loader2,
-  AlertCircle,
   Info,
   ShieldCheck,
   Cpu,
@@ -16,8 +15,8 @@ import NeuronSelect from "@/components/NeuronSelect";
 import ScoreBar from "@/components/ScoreBar";
 import Badge from "@/components/Badge";
 import ErrorState from "@/components/ErrorState";
-import { predictConnection } from "@/lib/api";
-import type { PredictionResult } from "@/lib/types";
+import { predictConnection, getModel } from "@/lib/api";
+import type { PredictionResult, ModelMetadata } from "@/lib/types";
 
 export default function PredictorPage() {
   const [source, setSource] = useState<number | null>(null);
@@ -27,6 +26,11 @@ export default function PredictorPage() {
   const [result, setResult] = useState<PredictionResult | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [modelInfo, setModelInfo] = useState<ModelMetadata | null>(null);
+
+  useEffect(() => {
+    getModel().then(setModelInfo).catch(() => setModelInfo(null));
+  }, []);
 
   const canPredict = source !== null && target !== null && !loading;
 
@@ -204,7 +208,10 @@ export default function PredictorPage() {
                     label="Model"
                     value={
                       <span className="flex items-center gap-1.5 text-xs font-[family-name:var(--font-mono)] text-text-secondary">
-                        <Cpu className="w-3 h-3 text-accent" /> Random Forest · 100 trees
+                        <Cpu className="w-3 h-3 text-accent" /> Random Forest
+                        {modelInfo?.n_estimators != null
+                          ? ` · ${modelInfo.n_estimators} trees`
+                          : ""}
                       </span>
                     }
                   />
@@ -235,8 +242,6 @@ export default function PredictorPage() {
           </AnimatePresence>
         </div>
       </div>
-
-      {error && <AlertCircle className="hidden" />}
     </PageShell>
   );
 }

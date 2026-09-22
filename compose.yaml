@@ -1,4 +1,4 @@
-# FlyMind deployable stack (Phase 16).
+# FlyMind deployable stack (Phase 16/17).
 #
 # Philosophy (documented in docs/DEPLOYMENT.md)
 #   * No infrastructure is created or managed here: no database, cache, queue or
@@ -7,15 +7,17 @@
 #     503-gated runtime dependency, not a baked image layer.
 #   * Two services only — `frontend` (Next.js) and `backend` (FastAPI). The
 #     frontend proxies /api/* to the backend via rewrites so the browser never
-#     holds backend credentials and there is exactly one public origin.
-#   * The backend stays behind the frontend for external traffic; only the
-#     frontend port is published to the host.
+#     holds backend credentials and there is exactly one public origin on the
+#     compose path.
+#   * Split production (Phase 17): the frontend deploys to Vercel and proxies
+#     to this backend at BACKEND_URL=http://152.58.46.80:8001, so the backend
+#     port is published on all interfaces (not loopback-only).
 #
 # Quick start (see docs/DEPLOYMENT.md for full walkthrough incl. checkout,
 # env, model placement and rollout/rollback):
 #   cp .env.example .env                # provide required secrets/paths
 #   docker compose up -d --build
-#   open http://localhost:3000          # frontend
+#   open http://localhost:3000          # frontend (compose path)
 #   docker compose ps                   # look for "healthy" columns
 #
 # The frontend depends_on the backend with a *healthy* gate: it waits until the
@@ -30,37 +32,42 @@ name: flymind
 services:
   backend:
     build:
-      context: ./backend
-      dockerfile: Dockerfile
+      # Repo root so the image receives backend/ + src/ (inference package).
+      context: .
+      dockerfile: backend/Dockerfile
     image: flymind-backend:${FLYMIND_DOCKER_TAG:-local}
     restart: unless-stopped
     environment:
       # APP_* is a static contract; MODEL_VERSION stays glued to the artifact.
       FLYMIND_APP_VERSION: ${FLYMIND_APP_VERSION:-1.0.0}
-      FLYMIND_API_VERSION: ${FLYMIND_API_VERSION:-1.0.0}
       FLYMIND_MODEL_VERSION: ${FLYMIND_MODEL_VERSION:-FlyMind-RF v1.0.0}
-      FLYMIND_ENV: ${FLYMIND_ENV:-production}
+      # Settings.ENV is Literal["dev"|"test"|"prod"] — never "production".
+      FLYMIND_ENV: ${FLYMIND_ENV:-prod}
       FLYMIND_DEBUG: ${FLYMIND_DEBUG:-false}
       FLYMIND_LOG_LEVEL: ${FLYMIND_LOG_LEVEL:-info}
       FLYMIND_PORT: ${FLYMIND_PORT:-8001}
       FLYMIND_HOST: ${FLYMIND_HOST:-0.0.0.0}
       FLYMIND_CORS_ORIGINS: ${FLYMIND_CORS_ORIGINS:?CORS_ORIGINS required in .env}
-      FLYMIND_API_PREFIX: /api
       # uvicorn binds ${PORT}; keep it aligned with FLYMIND_PORT so the
       # healthcheck and the published port match the actual listener.
       PORT: ${FLYMIND_PORT:-8001}
+      # Project root inside the container (config.py default resolves to /
+      # once app/ is at /flymind/app).
+      FLYMIND_PROJECT_ROOT: /flymind
       # Mounted artifact locations (host paths configured via MODELS_DIR/DATA_DIR).
       FLYMIND_MODELS_DIR: /flymind/models
-      FLYMIND_DATA_DIR: /flymind/data
-      FLYMIND_RESULTS_DIR: /flymind/results
+      FLYMIND_DATA_ROOT: /flymind/data
+      FLYMIND_REPORTS_DIR: /flymind/results/reports
     # Model + data are read-only host bind mounts; nothing is baked into the
     # image and nothing is committed to the repo.
     volumes:
       - ${MODELS_DIR:-./models}:/flymind/models:ro
       - ${DATA_DIR:-./data}:/flymind/data:ro
       - ${RESULTS_DIR:-./results}:/flymind/results
+    # Published on all interfaces so the Vercel-hosted frontend can reach
+    # BACKEND_URL=http://<host-ip>:8001 in the split architecture.
     ports:
-      - "127.0.0.1:8001:8001"
+      - "${FLYMIND_PORT:-8001}:${FLYMIND_PORT:-8001}"
     # Compose gate uses /api/health (live), documented as distinct from the
     # model-aware /api/ready (ready) probe used by orchestrators/CI.
     healthcheck:
@@ -72,7 +79,7 @@ services:
       interval: 10s
       timeout: 3s
       retries: 5
-      start_period: 20s
+      start_period: 30s
 
   frontend:
     build:

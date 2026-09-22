@@ -122,7 +122,7 @@ Requires (must be set; compose refuses to start otherwise):
     same-origin proxy makes this narrow; keep it tight).
 
 Recommended / tuned for deployment:
-  * `FLYMIND_ENV=production`, `FLYMIND_DEBUG=false` (dev only; no reload).
+  * `FLYMIND_ENV=prod`, `FLYMIND_DEBUG=false` (dev only; no reload).
   * `FLYMIND_LOG_LEVEL=info` (default), raise to `warning` in high-volume PROD.
   * `FLYMIND_HOST`, `FLYMIND_PORT` — listener address (default 0.0.0.0:8001).
   * `FLYMIND_MODEL_FILENAME` / `FLYMIND_MODEL_METADATA_FILENAME` — artifact
@@ -168,8 +168,10 @@ data and model:
   * frontend — `npm ci`, `tsc --noEmit`, `next build`.
   * All set to keep runtimes green without ever touching experiments or models/.
 
-We keep the legacy `ci.yml` (dashboard) untouched — it stays the dashboard's
-gate. `app-ci.yml` is added alongside it, not layered over it.
+The legacy Streamlit-era `ci.yml` has been removed (it could not pass on a
+clean runner: missing pytest install, Docker job required git-ignored data).
+`app-ci.yml` is the single CI gate: backend lint/tests, frontend lint/typecheck/build,
+API smoke, and docker build of both images.
 
 -------------------------------------------------------
 7. Troubleshooting

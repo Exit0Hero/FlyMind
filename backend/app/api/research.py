@@ -38,7 +38,7 @@ def get_research_summary() -> ResearchSummaryResponse:
             "RF model with node features achieves strong link prediction performance",
             "Cold-start split validates generalization to unseen neurons",
             "Neurotransmitter type and morphology features are most important",
-            "Model produces well-calibrated probability estimates",
+            "Model produces a ranking signal for candidate prioritization",
             "Per-source ranking shows consistent performance across neurons",
         ],
     )

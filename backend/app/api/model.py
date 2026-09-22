@@ -28,5 +28,5 @@ def get_model_info() -> ModelInfoResponse:
         )
     except FlyMindError:
         raise
-    except Exception:
+    except Exception:  # noqa: BLE001 — API boundary: map any unexpected error to 500
         raise InternalError("Model service is not available")

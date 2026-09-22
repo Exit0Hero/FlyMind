@@ -7,10 +7,13 @@ from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
-
 from app.core.errors import ModelUnavailableError
-from app.services import model_guard
-from app.services.model_guard import sha256_file, read_metadata, verify_artifact_integrity, validate_loaded_model
+from app.services.model_guard import (
+    read_metadata,
+    sha256_file,
+    validate_loaded_model,
+    verify_artifact_integrity,
+)
 
 
 class _RandomForestClassifierStub:
@@ -64,7 +67,7 @@ def test_checksum_match_ok(tmp_path):
 def test_integrity_disabled_skips_checksum(tmp_path):
     p = _write(tmp_path)
     meta = tmp_path / "m.json"
-    meta.write_text('{"artifact_hash_sha256": "' + f"0" * 64 + '"}')
+    meta.write_text('{"artifact_hash_sha256": "' + "0" * 64 + '"}')
     summary = verify_artifact_integrity(
         model_path=p, metadata_path=meta, integrity_check_enabled=False
     )

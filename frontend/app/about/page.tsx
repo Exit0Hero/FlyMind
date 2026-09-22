@@ -136,7 +136,7 @@ export default function AboutPage() {
         <p className="text-sm text-text-secondary leading-relaxed">
           FlyMind uses many decision trees together. Each tree independently evaluates patterns in the
           neuron-pair features, and the forest combines their decisions into a final score. This ensemble
-          approach is robust, reproducible, and produces a well-calibrated ranking signal —
+          approach is robust, reproducible, and produces a ranking signal —
           ideal for generating candidate connections at connectome scale.
         </p>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-4">

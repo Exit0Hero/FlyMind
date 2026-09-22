@@ -11,7 +11,6 @@ import {
   Ruler,
   MapPin,
   GitFork,
-  Loader2,
   ArrowUpRight,
   Database,
 } from "lucide-react";

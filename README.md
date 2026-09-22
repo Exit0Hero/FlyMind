@@ -84,14 +84,14 @@ Connection Score
      ↓
 Candidate Ranking
      ↓
-Streamlit Dashboard
+Next.js Web Application (FastAPI + ML backend)
 ```
 
 GraphSAGE was evaluated as a comparative model.
 
-## Dashboard
+## Application
 
-Interactive research dashboard with 6 pages:
+Interactive web application with 6 pages (Next.js frontend, FastAPI backend):
 
 | Page | Description |
 |------|-------------|
@@ -102,7 +102,7 @@ Interactive research dashboard with 6 pages:
 | **Research Results** | Validated experiment results |
 | **About / Limitations** | Scientific context and known limitations |
 
-The dashboard is an interface over validated research artifacts.
+The application is an interface over validated research artifacts.
 
 ## Research Limitations
 
@@ -119,8 +119,8 @@ The dashboard is an interface over validated research artifacts.
 2. Place the data in the expected location (see `docs/QUICKSTART.md`)
 3. Install dependencies: `pip install -r requirements.txt`
 4. Run processing scripts
-5. Run tests: `python -m pytest tests/ -v`
-6. Launch dashboard: `streamlit run app/streamlit_app.py`
+5. Run tests: `python -m pytest tests/ -v` (root) and `PYTHONPATH=backend python -m pytest backend/tests -v`
+6. Start the stack: `docker compose up -d --build` (see `docs/DEPLOYMENT.md`)
 
 See `docs/QUICKSTART.md` for detailed instructions.
 

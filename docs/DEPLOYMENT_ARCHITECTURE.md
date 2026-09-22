@@ -1,5 +1,10 @@
 # FlyMind Deployment Architecture
 
+> **Status (Phase 17): SUPERSEDED.** The Streamlit container decision below is
+> historical. The live architecture is the two-service stack in
+> `docs/DEPLOYMENT.md` (FastAPI + Next.js) and, for production, the split
+> Vercel frontend + host backend described there.
+
 ## Decision: Option A — Streamlit Container
 
 ```

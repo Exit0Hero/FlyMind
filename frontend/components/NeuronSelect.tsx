@@ -181,6 +181,7 @@ export default function NeuronSelect({
                 <button
                   key={item.root_id}
                   role="option"
+                  aria-selected="false"
                   onClick={() => handleSelect(item)}
                   className="w-full text-left px-3 py-2.5 hover:bg-elevated transition-colors cursor-pointer flex items-center gap-3"
                 >

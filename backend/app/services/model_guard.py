@@ -23,8 +23,8 @@ import logging
 from pathlib import Path
 from typing import Any
 
-from app.core.errors import ModelUnavailableError
 from app.core.config import settings
+from app.core.errors import ModelUnavailableError
 
 log = logging.getLogger("flymind.model_guard")
 
@@ -57,7 +57,7 @@ def read_metadata(metadata_path: Path) -> dict[str, Any]:
         if not isinstance(data, dict):
             raise TypeError("metadata is not an object")
         return data
-    except (OSError, json.JSONDecodeError, TypeError) as exc:
+    except (OSError, json.JSONDecodeError, TypeError):
         log.warning("metadata unreadable - continuing without it", extra={"fields": {"path": str(metadata_path)}})
         return {}
 
@@ -158,7 +158,7 @@ def validate_loaded_model(
 
     try:
         pair_dim = int(inference.feature_dim)
-    except Exception:
+    except (TypeError, ValueError, AttributeError):
         pair_dim = None
     if pair_dim is not None and pair_dim != expected_pair:
         raise ModelUnavailableError(

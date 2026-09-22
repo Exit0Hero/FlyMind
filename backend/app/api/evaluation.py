@@ -1,12 +1,11 @@
 """Evaluation results endpoint."""
 
 import json
-from pathlib import Path
 
 from fastapi import APIRouter, HTTPException
 
 from app.core.config import settings
-from app.schemas.models import ExperimentResult, EvaluationResponse
+from app.schemas.models import EvaluationResponse, ExperimentResult
 
 router = APIRouter()
 

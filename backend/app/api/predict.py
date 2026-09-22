@@ -17,7 +17,7 @@ def predict_connection(req: PredictRequest) -> PredictResponse:
         raise NeuronNotFoundError("Source or target neuron was not found")
     except FlyMindError:
         raise
-    except Exception:
+    except Exception:  # noqa: BLE001 — API boundary: map any unexpected error to 500
         raise InternalError("Prediction service is not available")
 
     return PredictResponse(

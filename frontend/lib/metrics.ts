@@ -1,4 +1,4 @@
-import type { EvaluationResponse, ExperimentResult } from "./types";
+import type { EvaluationResponse } from "./types";
 
 export function experimentData(
   evaluation: EvaluationResponse | null,

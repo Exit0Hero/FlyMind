@@ -34,5 +34,6 @@ def version() -> VersionResponse:
         app_version=settings.APP_VERSION,
         api_version=settings.APP_VERSION,  # kept in sync with the API contract
         model_version=ml_service.model_version,
+        model_artifact=ml_service.model_artifact,
         model_loaded=ml_service.is_loaded,
     )
