@@ -86,6 +86,7 @@ class NeuronSearchItem(BaseModel):
     name: str | None = None
     nt_type: str | None = None
     super_class: str | None = None
+    primary_type: str | None = None
 
 
 class NeuronSearchResponse(BaseModel):

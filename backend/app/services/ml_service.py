@@ -35,6 +35,7 @@ class MLService:
                 self._ensure_src_on_path()
                 from src.link_prediction.inference import FlyMindInference
                 self._inference = FlyMindInference()
+                self._inference._ensure_loaded()
                 self._loaded = True
             except Exception as exc:
                 self._error = str(exc)
@@ -110,29 +111,38 @@ class MLService:
         }
 
     def search_neurons(self, query: str, limit: int = 20) -> list[dict[str, Any]]:
-        """Search neurons by root_id (exact/prefix) or name (substring)."""
+        """Search neurons by root_id (exact/prefix), name (substring), or primary_type (substring)."""
         self._ensure_loaded()
         lookup = self._inference._nt_lookup
         results: list[dict[str, Any]] = []
 
         query_str = str(query).strip()
+        query_lower = query_str.lower()
         query_int: int | None = None
         try:
             query_int = int(query_str)
         except (ValueError, TypeError):
             pass
 
+        def _str(val: Any) -> str:
+            if val is None:
+                return ""
+            if isinstance(val, float) and (val != val):  # NaN check
+                return ""
+            return str(val)
+
         # Exact root_id match first
         if query_int is not None and query_int in lookup:
             info = lookup[query_int]
             results.append({
                 "root_id": query_int,
-                "name": info.get("name"),
-                "nt_type": info.get("nt_type"),
-                "super_class": info.get("super_class"),
+                "name": _str(info.get("name")),
+                "nt_type": _str(info.get("nt_type")),
+                "super_class": _str(info.get("super_class")),
+                "primary_type": _str(info.get("primary_type")),
             })
 
-        # Prefix / substring search on root_id and name
+        # Prefix / substring search on root_id, name, and primary_type
         if len(results) < limit:
             for rid, info in lookup.items():
                 if len(results) >= limit:
@@ -140,16 +150,19 @@ class MLService:
                 if results and any(r["root_id"] == rid for r in results):
                     continue
                 rid_str = str(rid)
-                name = info.get("name") or ""
+                name = _str(info.get("name")).lower()
+                primary_type = _str(info.get("primary_type")).lower()
                 if (
                     query_str in rid_str
-                    or query_str.lower() in name.lower()
+                    or query_lower in name
+                    or query_lower in primary_type
                 ):
                     results.append({
                         "root_id": rid,
-                        "name": name,
-                        "nt_type": info.get("nt_type"),
-                        "super_class": info.get("super_class"),
+                        "name": _str(info.get("name")),
+                        "nt_type": _str(info.get("nt_type")),
+                        "super_class": _str(info.get("super_class")),
+                        "primary_type": _str(info.get("primary_type")),
                     })
 
         return results[:limit]

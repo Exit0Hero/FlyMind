@@ -25,6 +25,7 @@ def search_neurons(q: str = Query(..., min_length=1), limit: int = Query(20, ge=
             name=r.get("name"),
             nt_type=r.get("nt_type"),
             super_class=r.get("super_class"),
+            primary_type=r.get("primary_type"),
         )
         for r in results
     ]
