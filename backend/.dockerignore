@@ -1,0 +1,26 @@
+.git
+.gitignore
+__pycache__/
+*.pyc
+*.pyo
+
+# Tests never ship in the image; CI runs them against the source tree.
+tests/
+
+# Secrets / local env — must never enter the build context or the image.
+.env
+.env.*
+!.env.example
+
+# Runtime data and model artifacts are volume-mounted, not baked in.
+../models/
+../data/
+../results/
+../experiments/
+
+# Local dev/build noise
+.venv/
+venv/
+*.tsbuildinfo
+dist/
+build/

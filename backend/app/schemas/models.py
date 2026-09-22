@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Any, Optional
+from typing import Any
 
 from pydantic import BaseModel, Field
 
@@ -32,6 +32,7 @@ class VersionResponse(BaseModel):
     api_version: str
     model_version: str | None = None
     model_artifact: str | None = None
+    model_loaded: bool = False
 
 
 # ---------------------------------------------------------------------------

@@ -5,21 +5,22 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.api import (
+    candidates,
+    evaluation,
+    health,
+    model,
+    neurons,
+    pipeline,
+    predict,
+    ready,
+    research,
+    version,
+)
 from app.core.config import settings
 from app.core.exceptions import init_exception_handlers
 from app.core.logging import getLogger, setup_logging
 from app.core.middleware import RequestContextMiddleware
-from app.api import (
-    health,
-    ready,
-    model,
-    pipeline,
-    evaluation,
-    neurons,
-    predict,
-    candidates,
-    research,
-)
 
 log = getLogger("flymind.main")
 
@@ -53,6 +54,7 @@ def create_app() -> FastAPI:
 
     app.include_router(health.router, prefix="/api", tags=["health"])
     app.include_router(ready.router, prefix="/api", tags=["health"])
+    app.include_router(version.router, prefix="/api", tags=["diagnostics"])
     app.include_router(model.router, prefix="/api", tags=["model"])
     app.include_router(pipeline.router, prefix="/api", tags=["pipeline"])
     app.include_router(evaluation.router, prefix="/api", tags=["evaluation"])

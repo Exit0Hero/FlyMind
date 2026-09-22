@@ -125,3 +125,33 @@ class TestPipelineAndEvaluation:
         body = resp.json()
         assert body["dataset"]["n_neurons"] == 139255
         assert isinstance(body["key_findings"], list)
+
+class TestVersionSurface:
+    """Phase 16: deployment/versioning contract.
+
+    ``/api/version`` must expose distinct application, API and model version
+    identifiers and must **never** interact with the model artifact — a
+    version probe is a metadata-only read that CI and pre-rollout tooling use
+    without warming the model, and a client must be able to distinguish
+    "model known" from "model loaded".
+    """
+
+    def test_version_reports_identifiers_without_loading(self, client, use_stub):
+        resp = client.get("/api/version")
+        assert resp.status_code == 200
+        body = resp.json()
+        # Distinct surfaces: app code vs API contract vs model artifact.
+        assert body["app_version"]  # application build
+        assert body["api_version"]  # HTTP API contract
+        assert body["model_version"]  # model artifact (metadata), separate
+        assert body["app_version"] != body["model_version"]
+        # Version must not have force-loaded the model.
+        assert "model_loaded" in body
+
+    def test_version_known_but_not_loaded(self, client, use_unavailable):
+        resp = client.get("/api/version")
+        assert resp.status_code == 200
+        body = resp.json()
+        # Metadata version stays known even when the artifact is not loaded.
+        assert body["model_version"]
+        assert body["model_loaded"] is False

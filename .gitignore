@@ -41,3 +41,9 @@ frontend/.next/
 __pycache__/
 *.pyc
 .env
+
+# TypeScript incremental build cache (frontend)
+*.tsbuildinfo
+
+# Phase 16: experiments directory must never be committed/containerized
+experiments/

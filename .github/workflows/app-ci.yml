@@ -1,0 +1,111 @@
+# FlyMind continuous integration — app-level checks (Phase 16).
+#
+# This workflow is deliberately separate from the legacy dashboard CI
+# (`.github/workflows/ci.yml`) and runs on the production components that
+# Phase 16 ships. It never touches the flywear experiments, the model artifact
+# or the dataset:
+#   * Backend: fixture-only tests using the stub ML service (no artifact, no
+#     network dataset fetch). Runtime + dev deps installed from committed
+#     requirements files.
+#   * Frontend: type-check (tsc --noEmit) + production build (next build).
+#   * Live smoke against the *started* FastAPI app: /api/health, /api/ready and
+#     /api/version are probed through TestClient to assert the HTTP contract is
+#     actually served (model stays not loaded — readiness reflects it).
+#
+# Secrets/artifacts policy: CI has no access to .env, models/, data/ or
+# experiments/. Health gates use /api/health (liveness); /api/ready is asserted
+# to return 503 exactly when the (absent) artifact is not loaded, proving the
+# readiness contract without needing the model on the runner.
+
+name: app-ci
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+env:
+  # Backend must match the Docker base image (python:3.11-slim) so CI reflects
+  # what ships in the container, not just the dev machine.
+  PYTHON_VERSION: "3.11"
+  PYTHONPATH: backend
+
+jobs:
+  backend-ci:
+    name: Backend (install · lint · test)
+    runs-on: ubuntu-22.04
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+          cache-dependency-path: backend/requirements-dev.txt
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements-dev.txt
+
+      - name: Ruff lint
+        run: ruff check app tests
+
+      - name: Run backend test suite (fixture-only, no dataset/model)
+        run: python -m pytest tests -q
+
+  frontend-ci:
+    name: Frontend (type-check · build)
+    runs-on: ubuntu-22.04
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci --ignore-scripts --no-audit --no-fund
+
+      - name: Type-check
+        run: npx tsc --noEmit
+
+      - name: Production build
+        run: npm run build
+        env:
+          NEXT_PUBLIC_API_URL: /api
+          BACKEND_URL: http://backend:8001
+
+  api-contract:
+    name: Live API smoke (health · ready · version)
+    runs-on: ubuntu-22.04
+    needs: backend-ci
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+          cache-dependency-path: backend/requirements-dev.txt
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r backend/requirements-dev.txt
+
+      - name: Probe the served HTTP API
+        run: python scripts/smoke_api.py
