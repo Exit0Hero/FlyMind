@@ -62,6 +62,7 @@ export interface NeuronSearchItem {
   name: string | null;
   nt_type: string | null;
   super_class: string | null;
+  primary_type?: string | null;
 }
 
 export interface NeuronSearchResponse {

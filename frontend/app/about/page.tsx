@@ -1,158 +1,195 @@
 "use client";
 
+import { motion } from "framer-motion";
 import {
-  Info,
+  BookOpen,
   Brain,
   GitBranch,
   Zap,
-  BookOpen,
   ExternalLink,
+  Boxes,
+  ArrowDown,
+  Sigma,
   Code2,
+  Database,
+  Network,
 } from "lucide-react";
+import PageShell from "@/components/PageShell";
+
+const FLOW = [
+  { label: "Neuron A", icon: Brain },
+  { label: "Neuron B", icon: Brain },
+];
+
+const PROCESS = [
+  "Biological + Morphological Features",
+  "Pairwise Feature Engineering",
+  "Random Forest",
+  "Connection Score",
+  "Candidate Ranking",
+];
+
+const TECHS = [
+  { label: "Frontend", value: "Next.js 15, React 19, Tailwind CSS 4" },
+  { label: "Backend", value: "Python, FastAPI" },
+  { label: "ML", value: "scikit-learn (Random Forest)" },
+  { label: "Data", value: "FlyWire whole-brain connectome" },
+  { label: "Visualization", value: "Framer Motion, Lucide Icons" },
+  { label: "Language", value: "TypeScript, Python" },
+];
 
 export default function AboutPage() {
   return (
-    <div className="p-8 max-w-[900px] mx-auto">
+    <PageShell className="max-w-[1000px]">
       <header className="mb-10">
         <div className="flex items-center gap-3 mb-1">
-          <Info className="w-5 h-5 text-accent" />
+          <div className="w-9 h-9 rounded-[var(--radius-sm)] bg-accent/10 border border-accent/20 flex items-center justify-center">
+            <BookOpen className="w-4 h-4 text-accent" />
+          </div>
           <h1 className="text-2xl font-bold text-text-primary font-[family-name:var(--font-display)] tracking-tight">
-            About FlyMind
+            Methodology
           </h1>
         </div>
         <p className="text-sm text-text-muted mt-1">
-          Methodology and platform overview
+          How FlyMind turns neuron properties into connection scores
         </p>
       </header>
 
-      <div className="space-y-8">
-        <section className="bg-surface border border-border-subtle rounded-[var(--radius-lg)] p-6">
-          <h2 className="text-base font-semibold text-text-primary mb-3 font-[family-name:var(--font-display)] flex items-center gap-2">
-            <BookOpen className="w-4 h-4 text-accent" />
-            Overview
-          </h2>
-          <div className="text-sm text-text-secondary leading-relaxed space-y-3">
-            <p>
-              FlyMind is a machine learning platform for analyzing neural connectivity
-              in the <em>Drosophila melanogaster</em> brain. It provides predictive models
-              for synaptic connections between neurons, enabling researchers to explore
-              the connectome at scale.
-            </p>
-            <p>
-              The platform combines structural features of neurons—such as morphology,
-              spatial overlap, and connectivity patterns—with graph-based representations
-              to predict the existence and strength of synaptic connections.
-            </p>
-          </div>
-        </section>
+      {/* Overview */}
+      <section className="bg-surface border border-border-subtle rounded-[var(--radius-lg)] p-6 mb-6">
+        <h2 className="text-base font-semibold text-text-primary mb-3 font-[family-name:var(--font-display)] flex items-center gap-2">
+          <BookOpen className="w-4 h-4 text-accent" />
+          Overview
+        </h2>
+        <div className="text-sm text-text-secondary leading-relaxed space-y-3">
+          <p>
+            FlyMind is a machine-learning platform for analyzing neural connectivity in the{" "}
+            <em>Drosophila melanogaster</em> brain. It learns patterns from a large whole-brain connectome
+            and scores the likelihood that pairs of neurons connect — producing{" "}
+            <strong className="text-text-primary">model-suggested connection scores</strong> for researchers to
+            investigate further.
+          </p>
+          <p>
+            The platform combines biological properties (neurotransmitter profiles), morphological measures
+            (size, surface area, length), and spatial coordinates of neurons into features used by a
+            supervised model trained on observed connectivity.
+          </p>
+        </div>
+      </section>
 
-        <section className="bg-surface border border-border-subtle rounded-[var(--radius-lg)] p-6">
-          <h2 className="text-base font-semibold text-text-primary mb-4 font-[family-name:var(--font-display)] flex items-center gap-2">
-            <GitBranch className="w-4 h-4 text-accent" />
-            Pipeline Architecture
-          </h2>
-          <div className="space-y-3">
-            {[
-              {
-                step: "Data Ingestion",
-                desc: "Load connectome graph from the FlyWire dataset, including neuron metadata and synaptic partners.",
-                icon: Code2,
-              },
-              {
-                step: "Feature Engineering",
-                desc: "Extract structural features: morphological descriptors, spatial proximity metrics, and topological graph features.",
-                icon: Brain,
-              },
-              {
-                step: "Model Training",
-                desc: "Train gradient-boosted classifiers on labeled positive/negative connection pairs with cross-validation.",
-                icon: Zap,
-              },
-              {
-                step: "Evaluation",
-                desc: "Assess model performance using accuracy, precision, recall, F1 score, and AUC-ROC on held-out test data.",
-                icon: GitBranch,
-              },
-            ].map((item, i) => (
-              <div
-                key={i}
-                className="flex items-start gap-3 p-3 rounded-[var(--radius-sm)] bg-elevated"
+      {/* ML Process */}
+      <section className="bg-surface border border-border-subtle rounded-[var(--radius-lg)] p-6 mb-6">
+        <h2 className="text-base font-semibold text-text-primary mb-5 font-[family-name:var(--font-display)] flex items-center gap-2">
+          <Sigma className="w-4 h-4 text-accent" />
+          The Machine-Learning Process
+        </h2>
+
+        {/* A + B */}
+        <div className="flex items-center justify-center gap-4 mb-4">
+          {FLOW.map((f) => (
+            <div key={f.label} className="flex items-center gap-2 px-4 py-2 rounded-[var(--radius-md)] bg-elevated border border-border-subtle">
+              <f.icon className="w-4 h-4 text-accent" />
+              <span className="text-sm font-medium text-text-primary">{f.label}</span>
+            </div>
+          ))}
+          <div className="flex items-center gap-2 px-4 py-2 rounded-[var(--radius-md)] bg-violet/10 border border-violet/20">
+            <Code2 className="w-4 h-4 text-violet" />
+            <span className="text-sm font-medium text-violet">Directed Pair</span>
+          </div>
+        </div>
+
+        {/* Process flow */}
+        <div className="space-y-2">
+          {PROCESS.map((step, i) => {
+            const icons = [Boxes, Boxes, Brain, Zap, Network];
+            const Icon = icons[i];
+            return (
+              <motion.div
+                key={step}
+                initial={{ opacity: 0, x: -8 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true, margin: "-40px" }}
+                transition={{ duration: 0.3, delay: i * 0.06 }}
+                className="relative"
               >
-                <div className="w-7 h-7 rounded-full bg-accent/10 flex items-center justify-center shrink-0">
-                  <span className="text-xs font-bold text-accent">{i + 1}</span>
+                <div className="flex items-center gap-3 px-4 py-3 rounded-[var(--radius-md)] bg-elevated border border-border-subtle">
+                  <Icon className="w-4 h-4 text-accent shrink-0" />
+                  <span className="text-sm text-text-secondary">{step}</span>
                 </div>
-                <div>
-                  <span className="text-sm font-medium text-text-primary">
-                    {item.step}
-                  </span>
-                  <p className="text-xs text-text-muted mt-0.5">{item.desc}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
+                {i < PROCESS.length - 1 && (
+                  <div className="flex justify-center py-1">
+                    <ArrowDown className="w-4 h-4 text-text-muted" />
+                  </div>
+                )}
+              </motion.div>
+            );
+          })}
+        </div>
+      </section>
 
-        <section className="bg-surface border border-border-subtle rounded-[var(--radius-lg)] p-6">
-          <h2 className="text-base font-semibold text-text-primary mb-3 font-[family-name:var(--font-display)] flex items-center gap-2">
-            <Brain className="w-4 h-4 text-violet" />
-            Methodology
-          </h2>
-          <div className="text-sm text-text-secondary leading-relaxed space-y-3">
-            <p>
-              The prediction model operates on pairs of neurons (source, target) and
-              classifies whether a directed synaptic connection exists. Features are
-              computed per-pair and include:
-            </p>
-            <ul className="list-none space-y-2">
-              <li className="flex items-start gap-2">
-                <span className="text-accent mt-0.5">—</span>
-                <span>Spatial overlap: number of synapses between the neuron arbors</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-accent mt-0.5">—</span>
-                <span>Morphological similarity: shared branching patterns and arbor volumes</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-accent mt-0.5">—</span>
-                <span>Graph features: shared neighbors, Jaccard index, Adamic-Adar score</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-accent mt-0.5">—</span>
-                <span>Neuron type encoding: categorical embeddings for cell type annotations</span>
-              </li>
-            </ul>
-            <p>
-              Training uses stratified 5-fold cross-validation with early stopping.
-              The final model is an ensemble of gradient-boosted decision trees, optimized
-              for AUC-ROC while maintaining high precision at the operating threshold.
-            </p>
-          </div>
-        </section>
+      {/* Random Forest explained */}
+      <section className="bg-surface border border-border-subtle rounded-[var(--radius-lg)] p-6 mb-6">
+        <h2 className="text-base font-semibold text-text-primary mb-3 font-[family-name:var(--font-display)] flex items-center gap-2">
+          <Brain className="w-4 h-4 text-violet" />
+          Why a Random Forest?
+        </h2>
+        <p className="text-sm text-text-secondary leading-relaxed">
+          FlyMind uses many decision trees together. Each tree independently evaluates patterns in the
+          neuron-pair features, and the forest combines their decisions into a final score. This ensemble
+          approach is robust, reproducible, and produces a well-calibrated ranking signal —
+          ideal for generating candidate connections at connectome scale.
+        </p>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-4">
+          {[
+            { n: "100", label: "decision trees" },
+            { n: "60", label: "pair features" },
+            { n: "139,255", label: "neurons" },
+            { n: "3.73M", label: "observed edges" },
+          ].map((s) => (
+            <div key={s.label} className="p-3 rounded-[var(--radius-sm)] bg-elevated text-center">
+              <div className="font-[family-name:var(--font-display)] text-xl font-bold text-accent">{s.n}</div>
+              <div className="text-[11px] text-text-muted mt-0.5">{s.label}</div>
+            </div>
+          ))}
+        </div>
+      </section>
 
-        <section className="bg-surface border border-border-subtle rounded-[var(--radius-lg)] p-6">
-          <h2 className="text-base font-semibold text-text-primary mb-3 font-[family-name:var(--font-display)] flex items-center gap-2">
-            <Zap className="w-4 h-4 text-violet" />
-            Tech Stack
-          </h2>
-          <div className="grid grid-cols-2 gap-3">
-            {[
-              { label: "Frontend", value: "Next.js 15, React 19, Tailwind CSS 4" },
-              { label: "Backend", value: "Python, FastAPI" },
-              { label: "ML", value: "scikit-learn, XGBoost, PyTorch" },
-              { label: "Data", value: "FlyWire connectome dataset" },
-              { label: "Visualization", value: "Framer Motion, Lucide Icons" },
-              { label: "Language", value: "TypeScript, Python" },
-            ].map((item) => (
-              <div key={item.label} className="p-3 rounded-[var(--radius-sm)] bg-elevated">
-                <span className="text-[11px] uppercase tracking-wider text-text-muted font-medium">
-                  {item.label}
-                </span>
-                <p className="text-xs text-text-secondary mt-0.5">{item.value}</p>
-              </div>
-            ))}
-          </div>
-        </section>
-      </div>
-    </div>
+      {/* Tech stack */}
+      <section className="bg-surface border border-border-subtle rounded-[var(--radius-lg)] p-6 mb-6">
+        <h2 className="text-base font-semibold text-text-primary mb-3 font-[family-name:var(--font-display)] flex items-center gap-2">
+          <GitBranch className="w-4 h-4 text-accent" />
+          Tech Stack
+        </h2>
+        <div className="grid grid-cols-2 gap-3">
+          {TECHS.map((item) => (
+            <div key={item.label} className="p-3 rounded-[var(--radius-sm)] bg-elevated">
+              <span className="text-caption">{item.label}</span>
+              <p className="text-xs text-text-secondary mt-0.5">{item.value}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* External */}
+      <section className="bg-surface border border-border-subtle rounded-[var(--radius-lg)] p-6">
+        <h2 className="text-base font-semibold text-text-primary mb-3 font-[family-name:var(--font-display)] flex items-center gap-2">
+          <Database className="w-4 h-4 text-accent" />
+          Data Source
+        </h2>
+        <p className="text-sm text-text-secondary leading-relaxed mb-3">
+          FlyMind uses the publicly available FlyWire whole-brain connectome of{" "}
+          <em>Drosophila melanogaster</em>, which includes neuron metadata, synapse partners, and
+          neurotransmitter predictions.
+        </p>
+        <a
+          href="https://www.flywire.ai/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-1.5 text-sm text-accent hover:text-accent/80 hover:underline underline-offset-4 transition-colors no-underline"
+        >
+          FlyWire connectome <ExternalLink className="w-3.5 h-3.5" />
+        </a>
+      </section>
+    </PageShell>
   );
 }
