@@ -18,6 +18,22 @@ class HealthResponse(BaseModel):
     version: str = ""
 
 
+class VersionResponse(BaseModel):
+    """Versioning surface: application, API, and model versions are distinct.
+
+    ``model_version`` is read from the artifact **metadata** (never the loaded
+    model), so a client can identify the served artifact without triggering a
+    model load. Application and API versions describe the running code; they
+    do NOT change when a new model artifact is deployed, and vice-versa.
+    """
+
+    app_name: str
+    app_version: str
+    api_version: str
+    model_version: str | None = None
+    model_artifact: str | None = None
+
+
 # ---------------------------------------------------------------------------
 # Model info
 # ---------------------------------------------------------------------------
