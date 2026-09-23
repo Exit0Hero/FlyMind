@@ -7,6 +7,7 @@ from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
+
 from app.core.errors import ModelUnavailableError
 from app.services.model_guard import (
     read_metadata,

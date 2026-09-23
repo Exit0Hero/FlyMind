@@ -3,8 +3,9 @@
 from __future__ import annotations
 
 import pytest
-from app.core.config import DEFAULT_CORS_DEV, Settings
 from pydantic import ValidationError
+
+from app.core.config import DEFAULT_CORS_DEV, Settings
 
 
 def _make(**kwargs):
