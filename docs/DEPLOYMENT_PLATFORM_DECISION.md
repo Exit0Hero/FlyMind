@@ -3,8 +3,10 @@
 > **Status (Phase 17): SUPERSEDED.** The Streamlit-era decision below is
 > historical only. The production deployment is the split architecture in
 > `docs/DEPLOYMENT.md`: Next.js frontend on Vercel + FastAPI backend on this
-> machine (`BACKEND_URL=http://152.58.46.80:8001`), with Docker Compose as the
-> single-origin reference stack.
+> machine, with Docker Compose as the single-origin reference stack. This host
+> has no inbound port forwarding (CGNAT) and a dynamic public IP, so the
+> production `BACKEND_URL` is a Cloudflare quick tunnel
+> (`https://*.trycloudflare.com` → `127.0.0.1:8001`), not a raw IP:port.
 
 ## Options Evaluated
 

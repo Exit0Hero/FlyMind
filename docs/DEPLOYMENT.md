@@ -131,6 +131,12 @@ Recommended / tuned for deployment:
     (same-origin proxy). Set to a full URL only for a truly separate API host.
   * `BACKEND_URL` — the *server-side* upstream the Next rewrite targets when the
     browser hits same-origin `/api/*`. In compose: `http://backend:8001`.
+    On the split production path (Vercel + backend on this machine) set it in
+    the Vercel project (Production) to a publicly reachable URL for port 8001.
+    This host has no inbound port forwarding (CGNAT) and a dynamic public IP,
+    so production uses a Cloudflare quick tunnel
+    (`https://*.trycloudflare.com` → `http://127.0.0.1:8001`); restarts of the
+    tunnel yield a new hostname and require re-setting `BACKEND_URL` + redeploy.
 
 Frontend auto-guess on cold start: if the frontend starts with no backend
 reachable it keeps serving; the Dashboard surfaces a "degraded" banner (via

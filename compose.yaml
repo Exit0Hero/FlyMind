@@ -10,8 +10,11 @@
 #     holds backend credentials and there is exactly one public origin on the
 #     compose path.
 #   * Split production (Phase 17): the frontend deploys to Vercel and proxies
-#     to this backend at BACKEND_URL=http://152.58.46.80:8001, so the backend
-#     port is published on all interfaces (not loopback-only).
+#     to this backend via BACKEND_URL. This host has no inbound port forwarding
+#     (CGNAT) and a dynamic public IP, so the production BACKEND_URL is a
+#     Cloudflare quick tunnel (https://*.trycloudflare.com) → 127.0.0.1:8001,
+#     not a raw LAN/WAN address; the backend port is still published on all
+#     interfaces for local/compose use.
 #
 # Quick start (see docs/DEPLOYMENT.md for full walkthrough incl. checkout,
 # env, model placement and rollout/rollback):
