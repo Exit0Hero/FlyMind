@@ -6,6 +6,16 @@ FlyMind learns how neuron-level biological and morphological properties relate t
 
 ---
 
+## Launch Video
+
+[![FlyMind 19s launch video](./brag-output-2026-09-23-130555/brag-poster.jpg)](./brag-output-2026-09-23-130555/brag.mp4)
+
+**[▶ Watch the 19-second launch video](./brag-output-2026-09-23-130555/brag.mp4)** · 1920×1080 · 30fps
+
+https://github.com/Exit0Hero/FlyMind/raw/main/brag-output-2026-09-23-130555/brag.mp4
+
+---
+
 ## Problem
 
 Mapping neural connectivity is difficult. The Drosophila melanogaster connectome contains millions of directed synaptic connections between 139,255 neurons. Understanding which neurons connect to which—and whether measurable properties of neurons can predict these connections—remains a fundamental challenge.
@@ -50,6 +60,28 @@ Cold-start means training edges touching held-out neurons are excluded, testing 
 | GraphSAGE | 0.6485 | 0.6463 |
 
 *Cold-start evaluation. RF node features retained strong performance while graph-based methods collapsed because held-out neurons have no observed training neighborhoods.*
+
+### Key figures
+
+| Feature importance | Calibration | Rank distribution |
+|:---:|:---:|:---:|
+| ![Feature importance](./results/presentation/01_feature_importance.png) | ![Calibration](./results/presentation/02_calibration.png) | ![Rank distribution](./results/presentation/03_rank_distribution.png) |
+
+| Score distribution | Biological patterns | Degree distribution |
+|:---:|:---:|:---:|
+| ![Score distribution](./results/presentation/04_score_distribution.png) | ![Biological patterns](./results/presentation/05_biological_patterns.png) | ![Degree distribution](./results/presentation/06_degree_distribution.png) |
+
+Training curves and GNN diagnostics:
+
+| Training curves | Confusion matrix | Spatial scatter |
+|:---:|:---:|:---:|
+| ![Training curves](./results/figures/training_curves.png) | ![Confusion matrix](./results/figures/confusion_matrix_gnn.png) | ![Spatial scatter](./results/figures/spatial_scatter.png) |
+
+| Neuropil distribution | Class distribution | Annotation coverage |
+|:---:|:---:|:---:|
+| ![Neuropil](./results/figures/neuropil_distribution.png) | ![Class distribution](./results/figures/class_distribution.png) | ![Annotation coverage](./results/figures/annotation_coverage.png) |
+
+More figures: [`results/figures/`](./results/figures/) · robustness (`experiment_3/`) · 2D experiment (`experiment_2d/`)
 
 ## Candidate Ranking
 
@@ -103,16 +135,6 @@ Interactive web application with 6 pages (Next.js frontend, FastAPI backend):
 | **About / Limitations** | Scientific context and known limitations |
 
 The application is an interface over validated research artifacts.
-
-## Launch Video
-
-Watch the 19-second product launch video:
-
-**[▶ brag.mp4](./brag-output-2026-09-23-130555/brag.mp4)**
-
-Or open it directly on GitHub: [brag.mp4](https://github.com/Exit0Hero/FlyMind/blob/main/brag-output-2026-09-23-130555/brag.mp4)
-
-Source composition, creative brief, and research figures live under [`brag-output-2026-09-23-130555/`](./brag-output-2026-09-23-130555/) and [`results/figures/`](./results/figures/).
 
 ## Research Limitations
 
