@@ -1,0 +1,12 @@
+# Dev/test-only convenience deps (CI + local). Each is pulled in already by the
+# lint/test runner without bloating the runtime image:
+#   - pytest     -> backend test suite
+#   - httpx      -> FastAPI TestClient/ASGITransport (starlette dep)
+#   - ruff       -> lint/format gate (CI step "Ruff lint")
+#
+# The runtime container stays lean: it installs the full requirements.txt (all
+# pinned >= floors) but none of these, keeping the image free of test tooling.
+
+pytest>=8.2.0
+httpx>=0.27.0,<0.28.0
+ruff>=0.5.0

@@ -1,6 +1,17 @@
 # Data
 data/raw/
 data/processed/*.csv
+data/processed/*.parquet
+data/processed/*.npy
+data/processed/link_prediction/
+data/processed/edges_*.parquet
+
+# Models (large artifacts)
+models/*.pkl
+models/*.pt
+models/*.pth
+!models/link_prediction_rf.metadata.json
+!models/preprocessor_config.json
 
 # Python
 __pycache__/
@@ -10,6 +21,14 @@ __pycache__/
 dist/
 build/
 *.egg
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+*.log
+logs/
 
 # IDE
 .vscode/
@@ -25,3 +44,15 @@ Thumbs.db
 # Environment
 .env
 *.env
+frontend/node_modules/
+frontend/.next/
+frontend/.eslintcache
+__pycache__/
+*.pyc
+.env
+
+# TypeScript incremental build cache (frontend)
+*.tsbuildinfo
+
+# Phase 16: experiments directory must never be committed/containerized
+experiments/

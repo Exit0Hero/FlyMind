@@ -1,0 +1,35 @@
+.git
+.github
+.pytest_cache
+.ruff_cache
+__pycache__
+*.pyc
+*.pyo
+.env
+.env.*
+.venv
+venv
+notebooks/
+tests/
+docs/
+*.md
+!requirements.txt
+.dockerignore
+Dockerfile
+.gitignore
+
+# Frontend build state (backend build context must not ship node_modules).
+frontend/node_modules/
+frontend/.next/
+frontend/tsconfig.tsbuildinfo
+
+# Runtime artifacts are volume-mounted, never baked into the backend image.
+data/
+models/*.pkl
+models/*.pt
+models/*.pth
+results/
+experiments/
+
+# Misc
+*.egg-info

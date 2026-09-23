@@ -1,0 +1,22 @@
+.git
+.gitignore
+node_modules/
+.next/
+out/
+
+# Secrets / local env — never enter a build context.
+.env
+.env.*
+!.env.example
+
+# Local tooling / build state
+*.tsbuildinfo
+tsconfig.tsbuildinfo
+.prettierrc
+.eslintcache
+
+# Reports/results are mounted at runtime; never baked into the image.
+../results/
+../models/
+../data/
+../experiments/

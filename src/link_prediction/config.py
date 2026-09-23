@@ -1,8 +1,14 @@
 """FlyMind Link Prediction — Configuration."""
 
+import os
 import pathlib
 
 PROJECT_ROOT = pathlib.Path(__file__).resolve().parent.parent.parent
+
+# Configurable data path via environment variable
+DATA_ROOT = os.environ.get("FLYMIND_DATA_ROOT", PROJECT_ROOT / "data")
+DATA_ROOT = pathlib.Path(DATA_ROOT)
+
 PROCESSED_DIR = PROJECT_ROOT / "data" / "processed"
 LP_DIR = PROJECT_ROOT / "data" / "processed" / "link_prediction"
 FIGURES_DIR = PROJECT_ROOT / "results" / "figures" / "link_prediction"
