@@ -19,8 +19,8 @@ import { predictConnection, getModel } from "@/lib/api";
 import type { PredictionResult, ModelMetadata } from "@/lib/types";
 
 export default function PredictorPage() {
-  const [source, setSource] = useState<number | null>(null);
-  const [target, setTarget] = useState<number | null>(null);
+  const [source, setSource] = useState<string | null>(null);
+  const [target, setTarget] = useState<string | null>(null);
   const [sourceName, setSourceName] = useState<string | null>(null);
   const [targetName, setTargetName] = useState<string | null>(null);
   const [result, setResult] = useState<PredictionResult | null>(null);
@@ -77,8 +77,8 @@ export default function PredictorPage() {
               label="Source Neuron"
               value={source}
               onSelect={(id, name) => {
-                setSource(id === -1 ? null : id);
-                setSourceName(id === -1 ? null : name);
+                setSource(id);
+                setSourceName(name);
               }}
               placeholder="Search source neuron..."
               accent="violet"
@@ -94,8 +94,8 @@ export default function PredictorPage() {
               label="Target Neuron"
               value={target}
               onSelect={(id, name) => {
-                setTarget(id === -1 ? null : id);
-                setTargetName(id === -1 ? null : name);
+                setTarget(id);
+                setTargetName(name);
               }}
               placeholder="Search target neuron..."
               accent="violet"

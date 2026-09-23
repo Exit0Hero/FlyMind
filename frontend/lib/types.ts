@@ -39,7 +39,7 @@ export interface EvaluationResponse {
 }
 
 export interface Neuron {
-  root_id: number;
+  root_id: string;
   nt_type: string | null;
   nt_type_score: number | null;
   primary_type: string | null;
@@ -58,7 +58,7 @@ export interface Neuron {
 }
 
 export interface NeuronSearchItem {
-  root_id: number;
+  root_id: string;
   name: string | null;
   nt_type: string | null;
   super_class: string | null;
@@ -72,8 +72,8 @@ export interface NeuronSearchResponse {
 }
 
 export interface PredictionResult {
-  source_root_id: number;
-  target_root_id: number;
+  source_root_id: string;
+  target_root_id: string;
   score: number;
   is_known_edge: boolean;
   is_self_loop: boolean;
@@ -81,8 +81,8 @@ export interface PredictionResult {
 
 export interface CandidateItem {
   rank: number;
-  source_root_id: number;
-  target_root_id: number;
+  source_root_id: string;
+  target_root_id: string;
   score: number;
   target_nt_type: string | null;
   target_super_class: string | null;
@@ -90,7 +90,7 @@ export interface CandidateItem {
 }
 
 export interface CandidatesResponse {
-  source_root_id: number;
+  source_root_id: string;
   candidates: CandidateItem[];
   total_sampled: number;
 }

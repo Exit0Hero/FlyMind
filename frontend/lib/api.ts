@@ -22,7 +22,7 @@ import type {
 const DIRECT_URL = process.env.NEXT_PUBLIC_API_URL;
 export const API_BASE = DIRECT_URL ? DIRECT_URL.replace(/\/+$/, "") : "/api";
 
-export const DEFAULT_TIMEOUT_MS = 15_000;
+export const DEFAULT_TIMEOUT_MS = 45_000;
 export const MAX_AUTOMATIC_RETRIES = 2; // idempotent (GET) requests only
 
 interface RetryableOptions {
@@ -135,8 +135,8 @@ export async function getEvaluation(): Promise<EvaluationResponse> {
 }
 
 export async function predictConnection(
-  sourceRootId: number,
-  targetRootId: number,
+  sourceRootId: string,
+  targetRootId: string,
 ): Promise<PredictionResult> {
   return post<PredictionResult>("/predict", {
     source_root_id: sourceRootId,
@@ -145,7 +145,7 @@ export async function predictConnection(
 }
 
 export async function getCandidates(
-  sourceRootId: number,
+  sourceRootId: string,
   k?: number,
   candidatePoolSize?: number,
 ): Promise<CandidatesResponse> {
@@ -156,7 +156,7 @@ export async function getCandidates(
   });
 }
 
-export async function getNeuron(rootId: number): Promise<Neuron> {
+export async function getNeuron(rootId: string): Promise<Neuron> {
   return get<Neuron>("/neurons/" + rootId);
 }
 

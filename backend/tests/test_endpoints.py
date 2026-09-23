@@ -51,8 +51,8 @@ class TestPredictEndpoint:
         resp = client.post("/api/predict", json={"source_root_id": 11, "target_root_id": 12})
         assert resp.status_code == 200
         body = resp.json()
-        assert body["source_root_id"] == 11
-        assert body["target_root_id"] == 12
+        assert body["source_root_id"] == "11"
+        assert body["target_root_id"] == "12"
         assert body["score"] == 0.42
         assert body["is_known_edge"] is False
         assert body["is_self_loop"] is False
@@ -66,7 +66,7 @@ class TestCandidatesEndpoint:
         )
         assert resp.status_code == 200
         body = resp.json()
-        assert body["source_root_id"] == 11
+        assert body["source_root_id"] == "11"
         assert len(body["candidates"]) == 3
         assert [c["rank"] for c in body["candidates"]] == [1, 2, 3]
         assert body["total_sampled"] == 1000
@@ -85,7 +85,7 @@ class TestNeuronEndpoints:
         resp = client.get("/api/neurons/11")
         assert resp.status_code == 200
         body = resp.json()
-        assert body["root_id"] == 11
+        assert body["root_id"] == "11"
         assert body["name"] == "neuron-a"
 
     def test_search(self, client, use_stub):
@@ -102,6 +102,50 @@ class TestNeuronEndpoints:
     def test_search_long_query_422(self, client):
         resp = client.get("/api/neurons/search", params={"q": "a" * 200})
         assert resp.status_code == 422
+
+
+class TestRootIdWireFormat:
+    """Root IDs exceed Number.MAX_SAFE_INTEGER; must travel as JSON strings."""
+
+    def test_predict_accepts_string_ids(self, client, use_stub):
+        resp = client.post(
+            "/api/predict",
+            json={"source_root_id": "720575940596125868", "target_root_id": "720575940605825666"},
+        )
+        assert resp.status_code == 200
+        body = resp.json()
+        assert body["source_root_id"] == "720575940596125868"
+        assert body["target_root_id"] == "720575940605825666"
+
+    def test_predict_accepts_int_ids_and_returns_strings(self, client, use_stub):
+        resp = client.post("/api/predict", json={"source_root_id": 11, "target_root_id": 12})
+        assert resp.status_code == 200
+        body = resp.json()
+        assert body["source_root_id"] == "11"
+        assert body["target_root_id"] == "12"
+
+    def test_search_returns_string_root_ids(self, client, use_stub):
+        resp = client.get("/api/neurons/search", params={"q": "neuron"})
+        assert resp.status_code == 200
+        for item in resp.json()["results"]:
+            assert isinstance(item["root_id"], str)
+
+    def test_neuron_detail_returns_string_root_id(self, client, use_stub):
+        resp = client.get("/api/neurons/11")
+        assert resp.status_code == 200
+        assert isinstance(resp.json()["root_id"], str)
+
+    def test_candidates_return_string_root_ids(self, client, use_stub):
+        resp = client.post(
+            "/api/candidates",
+            json={"source_root_id": "11", "k": 2, "candidate_pool_size": 1000},
+        )
+        assert resp.status_code == 200
+        body = resp.json()
+        assert body["source_root_id"] == "11"
+        for c in body["candidates"]:
+            assert isinstance(c["source_root_id"], str)
+            assert isinstance(c["target_root_id"], str)
 
 
 class TestPipelineAndEvaluation:

@@ -7,8 +7,8 @@ import type { NeuronSearchItem } from "@/lib/types";
 
 interface NeuronSelectProps {
   label: string;
-  value: number | null;
-  onSelect: (rootId: number, name: string | null) => void;
+  value: string | null;
+  onSelect: (rootId: string | null, name: string | null) => void;
   placeholder?: string;
   accent?: "accent" | "violet";
   disabled?: boolean;
@@ -87,7 +87,7 @@ export default function NeuronSelect({
   };
 
   const clear = () => {
-    onSelect(-1, null);
+    onSelect(null, null);
     setSelectedName(null);
     setQuery("");
     setOpen(false);

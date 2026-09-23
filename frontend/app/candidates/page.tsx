@@ -23,7 +23,7 @@ const K_OPTIONS = [10, 25, 50, 100];
 type SortKey = "rank" | "score" | "type";
 
 export default function CandidatesPage() {
-  const [source, setSource] = useState<number | null>(null);
+  const [source, setSource] = useState<string | null>(null);
   const [sourceName, setSourceName] = useState<string | null>(null);
   const [k, setK] = useState(10);
   const [poolSize] = useState(1000);
@@ -31,7 +31,7 @@ export default function CandidatesPage() {
   const [totalSampled, setTotalSampled] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [expanded, setExpanded] = useState<number | null>(null);
+  const [expanded, setExpanded] = useState<string | null>(null);
   const [filter, setFilter] = useState("");
   const [sort, setSort] = useState<SortKey>("rank");
   const [sortAsc, setSortAsc] = useState(true);
@@ -60,7 +60,7 @@ export default function CandidatesPage() {
       rows = rows.filter(
         (c) =>
           c.target_primary_type?.toLowerCase().includes(q) ||
-          c.target_root_id.toString().includes(q) ||
+          c.target_root_id.includes(q) ||
           c.target_nt_type?.toLowerCase().includes(q)
       );
     }
@@ -110,8 +110,8 @@ export default function CandidatesPage() {
               label="Source Neuron"
               value={source}
               onSelect={(id, name) => {
-                setSource(id === -1 ? null : id);
-                setSourceName(id === -1 ? null : name);
+                setSource(id);
+                setSourceName(name);
                 setError(null);
               }}
               placeholder="Search source neuron..."
