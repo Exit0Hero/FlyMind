@@ -28,9 +28,9 @@ def readiness() -> dict[str, str]:
     reasons: list[str] = []
     if not ml_service.is_loaded:
         reasons.append(ml_service.load_error or "model not loaded")
-    model_path = settings.MODEL_PATH
-    if not model_path.exists():
-        reasons.append(f"model artifact {model_path.name} missing")
+        model_path = settings.MODEL_PATH
+        if not model_path.exists():
+            reasons.append(f"model artifact {model_path.name} missing")
 
     if reasons:
         log.info("service not ready", extra={"fields": {"reasons": reasons}})
