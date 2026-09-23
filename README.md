@@ -104,6 +104,16 @@ Interactive web application with 6 pages (Next.js frontend, FastAPI backend):
 
 The application is an interface over validated research artifacts.
 
+## Launch Video
+
+Watch the 19-second product launch video:
+
+**[▶ brag.mp4](./brag-output-2026-09-23-130555/brag.mp4)**
+
+Or open it directly on GitHub: [brag.mp4](https://github.com/Exit0Hero/FlyMind/blob/main/brag-output-2026-09-23-130555/brag.mp4)
+
+Source composition, creative brief, and research figures live under [`brag-output-2026-09-23-130555/`](./brag-output-2026-09-23-130555/) and [`results/figures/`](./results/figures/).
+
 ## Research Limitations
 
 - **Dataset-specific:** Results apply to FlyWire FAFB dataset only

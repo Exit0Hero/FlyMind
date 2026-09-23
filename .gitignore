@@ -57,3 +57,7 @@ __pycache__/
 # Phase 16: experiments directory must never be committed/containerized
 experiments/
 .vercel
+
+# Brag/HyperFrames temp render artifacts (keep brag.mp4 + composition/)
+brag-output-*/work-*/
+brag-output-*/.brag.hf-transaction-*/
