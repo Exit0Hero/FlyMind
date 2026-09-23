@@ -67,8 +67,9 @@ services:
       - ${MODELS_DIR:-./models}:/flymind/models:ro
       - ${DATA_DIR:-./data}:/flymind/data:ro
       - ${RESULTS_DIR:-./results}:/flymind/results
-    # Published on all interfaces so the Vercel-hosted frontend can reach
-    # BACKEND_URL=http://<host-ip>:8001 in the split architecture.
+    # Published on all interfaces for local/compose clients and tooling; the
+    # split production path reaches the backend through the Cloudflare tunnel
+    # (see header) rather than a raw host-ip:8001.
     ports:
       - "${FLYMIND_PORT:-8001}:${FLYMIND_PORT:-8001}"
     # Compose gate uses /api/health (live), documented as distinct from the
